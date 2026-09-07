@@ -30,7 +30,7 @@ RUN chown -R appuser:appgroup /app
 USER appuser
 
 # Expose internal application port
-EXPOSE 8080
+EXPOSE 8082
 
 # Run Spring Boot application
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
