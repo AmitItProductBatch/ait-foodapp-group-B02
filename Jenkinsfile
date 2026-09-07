@@ -192,7 +192,7 @@ pipeline {
             echo "👉 Frontend Application : http://${params.SERVER_IP}:4002"
             echo "👉 Backend REST API     : http://${params.SERVER_IP}:8082/api/users"
             echo "👉 Actuator Prometheus  : http://${params.SERVER_IP}:8082/actuator/prometheus"
-            echo "👉 PostgreSQL Database  : Port 5003 (DB: fooddelivery02)"
+            echo "👉 PostgreSQL Database  : Port 5002 (DB: fooddelivery02)"
             echo "🎉 ========================================================"
         }
         failure {
