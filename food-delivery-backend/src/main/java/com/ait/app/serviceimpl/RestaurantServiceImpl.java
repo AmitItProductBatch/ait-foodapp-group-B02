@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ait.app.dto.RestaurantRequestBody;
-import com.ait.app.model.Restaurant;
+import com.ait.app.entity.Restaurant;
 import com.ait.app.repository.RestaurantRepository;
 import com.ait.app.service.RestaurantService;
 

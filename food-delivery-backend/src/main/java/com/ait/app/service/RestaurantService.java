@@ -3,7 +3,7 @@ package com.ait.app.service;
 import org.springframework.stereotype.Service;
 
 import com.ait.app.dto.RestaurantRequestBody;
-import com.ait.app.model.Restaurant;
+import com.ait.app.entity.Restaurant;
 
 @Service
 public interface RestaurantService {
