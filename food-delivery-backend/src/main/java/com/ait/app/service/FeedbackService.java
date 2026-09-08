@@ -1,6 +1,6 @@
 package com.ait.app.service;
 
-import com.ait.app.model.Feedback;
+import com.ait.app.entity.Feedback;
 
 public interface FeedbackService {
 

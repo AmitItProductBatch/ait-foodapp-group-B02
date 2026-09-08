@@ -1,10 +1,11 @@
 package com.ait.app.serviceimpl;
 
-import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ait.app.model.Feedback;
+
+import com.ait.app.entity.Feedback;
 import com.ait.app.repository.FeedbackRepository;
 import com.ait.app.service.FeedbackService;
 

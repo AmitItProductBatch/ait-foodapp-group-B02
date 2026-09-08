@@ -3,7 +3,7 @@ package com.ait.app.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ait.app.model.Feedback;
+import com.ait.app.entity.Feedback;
 import com.ait.app.service.FeedbackService;
 
 import org.springframework.beans.factory.annotation.Autowired;

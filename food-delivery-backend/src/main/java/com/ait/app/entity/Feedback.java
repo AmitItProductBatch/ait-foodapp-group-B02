@@ -1,6 +1,5 @@
-package com.ait.app.model;
+package com.ait.app.entity;
 
-import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
