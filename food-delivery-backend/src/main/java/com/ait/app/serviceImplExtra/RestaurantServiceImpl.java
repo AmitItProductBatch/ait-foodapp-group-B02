@@ -1,4 +1,4 @@
-package com.ait.app.serviceimpl;
+package com.ait.app.serviceImplExtra;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,7 +20,6 @@ public class RestaurantServiceImpl implements RestaurantService {
 		
 		Restaurant restaurant = new Restaurant();
 		restaurant.setName(restaurantRequestBody.getName());
-		restaurant.setAddress(restaurantRequestBody.getAddress());
 		restaurant.setEmail(restaurantRequestBody.getEmail());
 		restaurant.setPhone(restaurantRequestBody.getPhone());
 		restaurant.setDescription(restaurantRequestBody.getDescription());

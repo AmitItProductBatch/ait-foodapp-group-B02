@@ -16,8 +16,7 @@ public class RestaurantRequestBody {
 	@Column(nullable = false, unique = true)
 	private String email;
 	
-	@Column(nullable = false)
-	private String address;
+ 
 	
 	
 	private String description;
@@ -55,14 +54,7 @@ public class RestaurantRequestBody {
 	}
 
 
-	public String getAddress() {
-		return address;
-	}
-
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
+	 
 
 
 	public String getDescription() {
