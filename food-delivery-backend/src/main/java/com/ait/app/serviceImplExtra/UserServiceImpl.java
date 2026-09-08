@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.ait.app.dto.UserResponse;
 import com.ait.app.entity.User;
 import com.ait.app.exception.UserException;
 import com.ait.app.repository.UserRepository;
@@ -30,4 +31,38 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 	}
 
+	@Override
+	public UserResponse getUser(int id) {
+
+		if (userRepository.existsById(id)) {
+
+			User user = userRepository.findById(id).get();
+
+			UserResponse dto = new UserResponse();
+
+			dto.setName(user.getName());
+			dto.setEmail(user.getEmail());
+			dto.setMobile(user.getMobile());
+			dto.setRole(user.getRole());
+
+			return dto;
+
+		} else {
+
+			throw new UserException("User not found", HttpStatus.NOT_FOUND);
+		}
+	}
+
+	@Override
+	public void deleteUser(int id) {
+
+		if (userRepository.existsById(id)) {
+
+			userRepository.deleteById(id);
+
+		} else {
+
+			throw new UserException("User not found", HttpStatus.NOT_FOUND);
+		}
+	}
 }
