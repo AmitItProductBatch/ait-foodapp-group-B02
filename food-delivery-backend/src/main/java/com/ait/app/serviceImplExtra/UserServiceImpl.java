@@ -1,4 +1,4 @@
-package com.ait.app.serviceImpl;
+package com.ait.app.serviceImplExtra;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
