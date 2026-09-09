@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.ait.app.entity.RestaurantAddress;
 
-@Service
+
 public interface RestaurantAddressRepository extends JpaRepository<RestaurantAddress, Long> {
 
 }

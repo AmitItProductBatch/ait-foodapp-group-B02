@@ -7,13 +7,13 @@ import jakarta.persistence.Column;
 @Service
 public class RestaurantRequestBody {
 	
-	@Column(nullable = false)
+
 	private String name;
 	
-	@Column(nullable = false, unique = true)
+	
 	private String phone;
 	
-	@Column(nullable = false, unique = true)
+	
 	private String email;
 	
  
