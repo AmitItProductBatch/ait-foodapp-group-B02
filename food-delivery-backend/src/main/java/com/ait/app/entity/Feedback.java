@@ -1,6 +1,8 @@
 package com.ait.app.entity;
 
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,14 +14,22 @@ import lombok.Data;
 @Table(name = "feedback")
 @Data
 public class Feedback {
+	  @Id
+	    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	    private int id;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
-	private int userId ;
-	private int restaurantId ;
-	private int orderId ;
-	private int rating ;
-	private String comment ;
+	    private int userId;
+
+	    private Long restaurantId;
+
+	    private Integer foodItemId;
+
+	    private int rating;
+
+	    private String comment;
+
+	    private LocalDateTime createdAt;
+
+	    private LocalDateTime updatedAt;
 
 }
