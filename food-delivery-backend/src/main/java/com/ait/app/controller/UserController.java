@@ -1,5 +1,7 @@
 package com.ait.app.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +33,7 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<UserResponse> getUser(@PathVariable int id) {
+	public ResponseEntity getUser(@PathVariable int id) {
 
 		UserResponse user = userService.getUser(id);
 
@@ -38,10 +41,34 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteUser(@PathVariable int id) {
+	public ResponseEntity deleteUser(@PathVariable int id) {
 
 		userService.deleteUser(id);
 
-		return new ResponseEntity("User deleted successfully",HttpStatus.OK);
+		return new ResponseEntity("User deleted successfully", HttpStatus.OK);
+	}
+
+	@GetMapping("/getAll")
+	public ResponseEntity getAllUsers() {
+
+		List<UserResponse> list = userService.getAllUsers();
+
+		return new ResponseEntity(list, HttpStatus.OK);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody User user) {
+
+		User updatedUser = userService.updateUser(id, user);
+
+		return new ResponseEntity(updatedUser, HttpStatus.OK);
+	}
+
+	@DeleteMapping("/deleteAll")
+	public ResponseEntity<String> deleteAllUsers() {
+
+		userService.deleteAllUsers();
+
+		return new ResponseEntity("All users deleted successfully", HttpStatus.OK);
 	}
 }

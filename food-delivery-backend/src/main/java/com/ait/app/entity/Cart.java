@@ -1,29 +1,23 @@
 package com.ait.app.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "users")
-public class User {
+public class Cart {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	private String name;
-	private long mobile;
-	private String email;
-	private String role;
-	private String password;
-	
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-	private Cart cart;
+
+	@OneToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 
 }
