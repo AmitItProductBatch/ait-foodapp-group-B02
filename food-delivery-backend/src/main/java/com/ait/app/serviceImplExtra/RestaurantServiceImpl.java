@@ -1,5 +1,7 @@
 package com.ait.app.serviceImplExtra;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -39,6 +41,12 @@ public class RestaurantServiceImpl implements RestaurantService {
 		
 		restaurantRepository.deleteById(id);
 		
+	}
+
+	@Override
+	public List<Restaurant> getRestaurantByCity(String city) {
+		
+		return restaurantRepository.findByRestaurantAddressCity(city);
 	}
 
 	  

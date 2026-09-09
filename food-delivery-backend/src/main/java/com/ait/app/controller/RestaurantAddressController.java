@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ait.app.dto.RestaurantAddressRequestDto;
@@ -13,12 +14,13 @@ import com.ait.app.entity.RestaurantAddress;
 import com.ait.app.service.RestaurantAddressService;
 
 @RestController
+@RequestMapping("api/restaurant-address")
 public class RestaurantAddressController {
 	
 	@Autowired
 	RestaurantAddressService restaurantAddressService;
 
-@PostMapping("api/restaurant/address")
+@PostMapping
 public RestaurantAddress saveRestaurantAddress(@RequestBody  RestaurantAddressRequestDto restaurantAddressRequestDto){
 	
 		RestaurantAddress restaurantAddress = restaurantAddressService.saveRestaurantAddress(restaurantAddressRequestDto);
@@ -27,12 +29,12 @@ public RestaurantAddress saveRestaurantAddress(@RequestBody  RestaurantAddressRe
 			
 }
 
-@GetMapping("api/restaurant/{id}")
+@GetMapping("{id}")
 public RestaurantAddress getRestaurantAddressById(@PathVariable Long id) {
 	return restaurantAddressService.getRestaurantAddressById(id);
 }
 
-@DeleteMapping("api/restaurant/{id}")
+@DeleteMapping("{id}")
 public String deleteRestaurantAddress(@PathVariable Long id) {
 	restaurantAddressService.deleteRestaurantAddress(id);
 	
