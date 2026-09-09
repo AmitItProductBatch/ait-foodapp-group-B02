@@ -53,4 +53,12 @@ public class FoodItemServiceImpl implements Fooditemservice{
 		fooditemRepo.deleteById(id);
 	}
 
+	@Override
+	public FoodItemDto updateFoodItem(int id, FoodItemDto dto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+
 }
