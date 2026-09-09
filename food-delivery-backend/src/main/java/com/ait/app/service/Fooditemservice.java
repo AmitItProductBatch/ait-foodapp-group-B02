@@ -8,6 +8,7 @@ public interface Fooditemservice {
   FoodItem addfooditem(FoodItemDto dto);
   FoodItem getfooditem(int id);
   void deletefooditem(int id);
+  FoodItemDto updateFoodItem(int id, FoodItemDto dto);
 	
 
 }
