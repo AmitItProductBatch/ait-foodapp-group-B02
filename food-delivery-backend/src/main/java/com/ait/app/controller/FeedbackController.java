@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -57,12 +58,23 @@ public class FeedbackController {
 	  }
 	
 	
+	  
+	  @PutMapping("{/feedbackId}")
+	  public ResponseEntity<Feedback> updateFeedback(@PathVariable int feedbackId, @RequestBody FeedbackDto feedbackDto){
+		  return ResponseEntity.ok(feedbackService.updateFeedback(feedbackId, feedbackDto));
+				  
+	  }
+	  
+	  
 	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteFeedback(@PathVariable int id) {
+	  @DeleteMapping("/{id}")
+	    public ResponseEntity<String> deleteFeedback(
+	            @PathVariable int id) {
 
-		feedbackService.deleteFeedback(id);
+	        feedbackService.deleteFeedback(id);
 
-		return ResponseEntity.ok( "Feedback Deleted Successfully");
-	}
+	        return ResponseEntity.ok(
+	                "Feedback Deleted Successfully"
+	        );
+	    }
 }
