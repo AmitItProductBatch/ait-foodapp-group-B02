@@ -59,7 +59,7 @@ public class FeedbackController {
 	
 	
 	  
-	  @PutMapping("{/feedbackId}")
+	  @PutMapping("/{feedbackId}")
 	  public ResponseEntity<Feedback> updateFeedback(@PathVariable int feedbackId, @RequestBody FeedbackDto feedbackDto){
 		  return ResponseEntity.ok(feedbackService.updateFeedback(feedbackId, feedbackDto));
 				  

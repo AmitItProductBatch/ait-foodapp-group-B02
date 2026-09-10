@@ -117,38 +117,30 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 	@Override
 	public Feedback updateFeedback(int feedbackId, FeedbackDto feedbackDto) {
-	
-		Feedback feedback = feedbackRepository.findById(feedbackId).get();
-		
-		if(feedback== null) {
-			throw new FooditemException("Feedback Not Found", HttpStatus.NOT_FOUND);
-		}
-		
-		if(feedback.getUserId() !=feedbackDto.getUserId() ) {
+
+		Feedback feedback = feedbackRepository.findById(feedbackId)
+				.orElseThrow(() -> new FeedbackException("Feedback Not Found", HttpStatus.NOT_FOUND));
+
+		if (feedback.getUserId() != feedbackDto.getUserId()) {
 			throw new FeedbackException("You are not allowe to edit this feedback ", HttpStatus.FORBIDDEN);
-			
+
 		}
-		
-		
-		if(feedback.getCreatedAt().plusDays(30).isBefore(LocalDateTime.now())) {
-			
+
+		if (feedback.getCreatedAt().plusDays(30).isBefore(LocalDateTime.now())) {
+
 			throw new FeedbackException("Feedback can Only be edited within 30 days ", HttpStatus.FORBIDDEN);
 		}
-		
-		if(feedback.getRating()<1|| feedback.getRating()>5) {
-			
+
+		if (feedback.getRating() < 1 || feedback.getRating() > 5) {
+
 			throw new FeedbackException("Rating must between 1 to 5", HttpStatus.BAD_REQUEST);
-			
-			
+
 		}
-		
-		
+
 		feedback.setComment(feedbackDto.getComment());
 		feedback.setRating(feedbackDto.getRating());
 		feedback.setUpdatedAt(LocalDateTime.now());
-		
-		
-		
+
 		return feedbackRepository.save(feedback);
 	}
 }
