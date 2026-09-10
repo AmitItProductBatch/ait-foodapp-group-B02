@@ -30,10 +30,12 @@ public class Restaurant {
 	
 	private String description;
 	
-	@JsonIgnore
+
 	@OneToOne(mappedBy = "restaurant")
 	private RestaurantAddress restaurantAddress;
 	
+	@OneToMany(mappedBy = "restaurant")
+	private List<FoodItem> foodItems;
 	
 
 

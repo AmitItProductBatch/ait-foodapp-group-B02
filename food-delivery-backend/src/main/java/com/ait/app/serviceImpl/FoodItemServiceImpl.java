@@ -50,15 +50,15 @@ public class FoodItemServiceImpl implements Fooditemservice{
 			throw new FooditemException("Description can not be empty", HttpStatus.BAD_REQUEST);
 		}
 		
-	
+		//validate cuisine
 		if(dto.getCuisine()==null || dto.getCuisine().trim().isEmpty()) {
 			throw new FooditemException("cuisine can not be empty", HttpStatus.BAD_REQUEST);
 		}
-	
+		//validate restaurant id
 		if(dto.getRestaurantId()<=0) {
 			throw new FooditemException("Restaurant id must be greater than 0", HttpStatus.BAD_REQUEST);
 		}
-	
+		//Check restaurant exists
 		Restaurant restaurant = repository.findById((long) dto.getRestaurantId()).orElse(null);
 
 		if (restaurant == null) {
