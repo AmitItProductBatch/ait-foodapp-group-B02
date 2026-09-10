@@ -16,4 +16,6 @@ public interface FeedbackService {
 	Feedback getFeedbackById(int id);
 
 	void deleteFeedback(int id);
+	
+	Feedback updateFeedback(int feedbackId, FeedbackDto feedbackDto);
 }
