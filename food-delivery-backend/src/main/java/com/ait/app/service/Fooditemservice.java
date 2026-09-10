@@ -10,11 +10,9 @@ public interface Fooditemservice {
   FoodItem addfooditem(FoodItemDto dto);
   FoodItem getfooditem(int id);
   void deletefooditem(int id);
-<<<<<<< Updated upstream
 	
-=======
+
+
   FoodItemDto updateFoodItem(int id, FoodItemDto dto);
   List<FoodItemDto> getAllFoodItems();
->>>>>>> Stashed changes
-
 }

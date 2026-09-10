@@ -12,6 +12,6 @@ public class FoodItemDto {
 	private String cuisine;
 	private boolean available;
 	private double price;
-    private int restaurantId;
+   private int restaurantId;
 
 }

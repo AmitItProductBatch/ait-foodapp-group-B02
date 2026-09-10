@@ -28,24 +28,24 @@ public class FoodItemServiceImpl implements Fooditemservice{
 	@Override
 	public FoodItem addfooditem(FoodItemDto dto) {
 		
-	//check dto
+	
 		if(dto==null) {
 			throw new FooditemException("fooditem not found", HttpStatus.BAD_REQUEST);
 			    }
 		
-		//validate food name
+		
 		if(dto.getFoodname()==null || dto.getFoodname().trim().isEmpty()) {
 			throw new FooditemException("Food name cannot be empty",
                     HttpStatus.BAD_REQUEST);
 			
 		}
 		
-		//validate food type
+		
 		if(dto.getFoodtype()==null || dto.getFoodtype().trim().isEmpty()) {
 			throw new FooditemException( "Food type must be VEG or NON_VEG",
                     HttpStatus.BAD_REQUEST);
 		}
-		//validate description
+		
 		if(dto.getDescription()==null || dto.getFoodtype().trim().isEmpty()) {
 			throw new FooditemException("Description can not be empty", HttpStatus.BAD_REQUEST);
 		}
@@ -68,7 +68,7 @@ public class FoodItemServiceImpl implements Fooditemservice{
 		    );
 		}
     		
-		//Check duplicate food in SAME restaurant
+		
 		Optional<FoodItem> existingfood=fooditemRepo.findByFoodnameIgnoreCaseAndRestaurantId(dto.getFoodname().trim(),dto.getRestaurantId());
 		if(existingfood.isPresent()) {
 			throw new FooditemException("food already exist", HttpStatus.BAD_REQUEST);
@@ -102,7 +102,7 @@ public class FoodItemServiceImpl implements Fooditemservice{
 		if(id<=0) {
 			throw new FooditemException("food item must be greater than 0", HttpStatus.BAD_REQUEST);
 		}
-		//First check whether item exists
+	
 		if(!fooditemRepo.existsById(id)) {
 			throw new FooditemException("food item not found with id:"+id, HttpStatus.NOT_FOUND);
 		}
@@ -112,8 +112,8 @@ public class FoodItemServiceImpl implements Fooditemservice{
 	
 	
 
-<<<<<<< Updated upstream:food-delivery-backend/src/main/java/com/ait/app/serviceImpl/FoodItemServiceImpl.java
-=======
+
+
 	@Override
 	public FoodItemDto updateFoodItem(int id, FoodItemDto dto) {
 		// Validate ID
@@ -213,5 +213,5 @@ public class FoodItemServiceImpl implements Fooditemservice{
 
 	
 
->>>>>>> Stashed changes:food-delivery-backend/src/main/java/com/ait/app/serviceImplExtra/FoodItemServiceImpl.java
+
 }

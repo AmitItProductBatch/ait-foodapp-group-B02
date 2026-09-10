@@ -43,7 +43,7 @@ public class FooditemController {
 		
 	}
 	 @DeleteMapping("/delete/{id}")
-	void deletefooditem(int id) {
+	void deletefooditem(@PathVariable int id) {
 		 fooditemservice.deletefooditem(id);
 	}
 	 

@@ -3,8 +3,11 @@ package com.ait.app.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ait.app.dto.FeedbackDto;
 import com.ait.app.entity.Feedback;
 import com.ait.app.service.FeedbackService;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,22 +26,43 @@ public class FeedbackController {
 	FeedbackService feedbackService;
 
 	@PostMapping
-	public ResponseEntity<Feedback> createFeedback(@RequestBody Feedback feedback) {
+	public ResponseEntity<String> createFeedback(@RequestBody FeedbackDto feedbackDto) {
 
-		return new ResponseEntity<>(feedbackService.createFeedback(feedback), HttpStatus.CREATED);
+	    feedbackService.createFeedback(feedbackDto);
+
+	    return new ResponseEntity<>(
+	            "Feedback Created Successfully",
+	            HttpStatus.CREATED
+	    );
 	}
-
+	
+	@GetMapping
+	public ResponseEntity<List<Feedback>> getAllFeedback(){
+		 return ResponseEntity.ok(
+	                feedbackService.getAllFeedback()
+	        );
+	}
+	
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<Feedback> getFeedbackById(@PathVariable int id) {
 
 		return ResponseEntity.ok(feedbackService.getFeedbackById(id));
 	}
 
+	
+	  @GetMapping("/restaurant/{restaurantId}")
+	  public ResponseEntity<List<Feedback>>getRestaurantFeedback(@PathVariable Long restaurantId){
+		  return ResponseEntity.ok(feedbackService.getRestaurantFeedback(restaurantId));
+	  }
+	
+	
+	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteFeedback(@PathVariable int id) {
+	public ResponseEntity<String> deleteFeedback(@PathVariable int id) {
 
 		feedbackService.deleteFeedback(id);
 
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok( "Feedback Deleted Successfully");
 	}
 }
