@@ -45,7 +45,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
 	@Override
 	public List<Restaurant> getRestaurantByCity(String city) {
-		
+		city.get
 		return restaurantRepository.findByRestaurantAddressCity(city);
 	}
 
