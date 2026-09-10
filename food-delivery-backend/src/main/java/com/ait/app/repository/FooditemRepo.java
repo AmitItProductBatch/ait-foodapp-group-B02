@@ -8,5 +8,6 @@ import com.ait.app.entity.FoodItem;
 
 public interface FooditemRepo extends JpaRepository<FoodItem, Integer>{
 
-	Optional<FoodItem> findByFoodname(String foodname);
+	Optional<FoodItem> findByFoodnameIgnoreCaseAndRestaurantId(
+	        String foodname, int restaurantId);
 }
