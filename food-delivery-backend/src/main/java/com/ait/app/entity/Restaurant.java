@@ -44,14 +44,7 @@ public class Restaurant {
 	
 
 
-	public RestaurantAddress getRestaurantAddress() {
-		return restaurantAddress;
-	}
-
-
-	public void setRestaurantAddress(RestaurantAddress restaurantAddress) {
-		this.restaurantAddress = restaurantAddress;
-	}
+	 
 
 
 	
