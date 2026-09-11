@@ -1,5 +1,8 @@
 package com.ait.app.serviceImplExtra;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -64,5 +67,69 @@ public class UserServiceImpl implements UserService {
 
 			throw new UserException("User not found", HttpStatus.NOT_FOUND);
 		}
+	}
+
+	@Override
+	public List<UserResponse> getAllUsers() {
+
+		List<User> l = userRepository.findAll();
+
+		if (l.isEmpty()) {
+
+			throw new UserException("Users not found", HttpStatus.NOT_FOUND);
+		}
+
+		List<UserResponse> list = new ArrayList();
+
+		for (User user : l) {
+
+			UserResponse dto = new UserResponse();
+			dto.setName(user.getName());
+			dto.setMobile(user.getMobile());
+			dto.setEmail(user.getEmail());
+			dto.setRole(user.getRole());
+
+			list.add(dto);
+
+		}
+
+		return list;
+	}
+
+	@Override
+	public User updateUser(int id, User user) {
+
+		if (userRepository.existsById(id)) {
+
+			User ur = userRepository.findById(id).get();
+
+			ur.setEmail(user.getEmail());
+			ur.setMobile(user.getMobile());
+			ur.setName(user.getName());
+			ur.setPassword(user.getPassword());
+
+			return userRepository.save(ur);
+
+		} else {
+
+			throw new UserException("User not found", HttpStatus.NOT_FOUND);
+		}
+
+	}
+
+	@Override
+	public void deleteAllUsers() {
+
+		List<User> l = userRepository.findAll();
+
+		if (l.isEmpty()) {
+
+			throw new UserException("List is empty", HttpStatus.NOT_FOUND);
+			
+		} else {
+
+			userRepository.deleteAll();
+		}
+
 	}
 }
