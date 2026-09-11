@@ -1,5 +1,7 @@
 package com.ait.app.entity;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -7,11 +9,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "restaurants")
+@Data
 public class Restaurant {
 
 	@Id
@@ -31,7 +36,7 @@ public class Restaurant {
 	private String description;
 	
 
-	@OneToOne(mappedBy = "restaurant")
+	@OneToOne(mappedBy =  "restaurant")
 	private RestaurantAddress restaurantAddress;
 	
 	@OneToMany(mappedBy = "restaurant")
@@ -39,65 +44,9 @@ public class Restaurant {
 	
 
 
-	public RestaurantAddress getRestaurantAddress() {
-		return restaurantAddress;
-	}
+	 
 
 
-	public void setRestaurantAddress(RestaurantAddress restaurantAddress) {
-		this.restaurantAddress = restaurantAddress;
-	}
-
-
-	public Long getId() {
-		return id;
-	}
-
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-
-	public String getName() {
-		return name;
-	}
-
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-
-	public String getPhone() {
-		return phone;
-	}
-
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-
-	public String getEmail() {
-		return email;
-	}
-
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-
-	public String getDescription() {
-		return description;
-	}
-
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
 	
 	
 	
