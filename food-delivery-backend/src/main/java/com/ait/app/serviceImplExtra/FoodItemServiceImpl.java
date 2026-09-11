@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -50,22 +51,19 @@ public class FoodItemServiceImpl implements Fooditemservice{
 			throw new FooditemException("Description can not be empty", HttpStatus.BAD_REQUEST);
 		}
 		
-		//validate cuisine
+
 		if(dto.getCuisine()==null || dto.getCuisine().trim().isEmpty()) {
 			throw new FooditemException("cuisine can not be empty", HttpStatus.BAD_REQUEST);
 		}
-		//validate restaurant id
+		
 		if(dto.getRestaurantId()<=0) {
 			throw new FooditemException("Restaurant id must be greater than 0", HttpStatus.BAD_REQUEST);
 		}
-		//Check restaurant exists
+		
 		Restaurant restaurant = repository.findById((long) dto.getRestaurantId()).orElse(null);
 
 		if (restaurant == null) {
-		    throw new FooditemException(
-		        "Restaurant not found with id: " + dto.getRestaurantId(),
-		        HttpStatus.NOT_FOUND
-		    );
+		    throw new FooditemException("Restaurant not found with id: " + dto.getRestaurantId(), HttpStatus.NOT_FOUND);
 		}
     		
 		
@@ -84,7 +82,8 @@ public class FoodItemServiceImpl implements Fooditemservice{
 			
 			return	fooditemRepo.save(item);
 	}
-
+    
+	@Cacheable(value = "foodItems", key = "#id")
 	@Override
 	public FoodItem getfooditem(int id) {
 		if(id<=0) {
@@ -116,24 +115,24 @@ public class FoodItemServiceImpl implements Fooditemservice{
 
 	@Override
 	public FoodItemDto updateFoodItem(int id, FoodItemDto dto) {
-		// Validate ID
+	
 		if(id<=0) {
 			throw new FooditemException("food item ID must be greater than 0", HttpStatus.BAD_REQUEST);
 		}
-		//validate dto
+	
 		if(dto==null) {
 			throw new FooditemException(  "Food item details cannot be null", HttpStatus.BAD_REQUEST);
 		}
-		//Find existing food item
+		
 		FoodItem item = fooditemRepo.findById(id).orElse(null);
 		if(item==null) {
 			throw new FooditemException("Food item not found with id: " + id, HttpStatus.NOT_FOUND);
 		}
-		//  Validate food name
+	
         if (dto.getFoodname() == null || dto.getFoodname().trim().isEmpty()) {
             throw new FooditemException(  "Food name cannot be empty", HttpStatus.BAD_REQUEST);
         }
-        //  Validate food type
+ 
         if (dto.getFoodtype() == null ||dto.getFoodtype().trim().isEmpty()) {
             throw new FooditemException( "Food type cannot be empty", HttpStatus.BAD_REQUEST);
         }
@@ -141,33 +140,33 @@ public class FoodItemServiceImpl implements Fooditemservice{
 
             throw new FooditemException( "Food type must be VEG or NON_VEG", HttpStatus.BAD_REQUEST);
         }
-       //validate description
+     
         if(dto.getDescription()==null || dto.getDescription().trim().isEmpty()) {
         	throw new FooditemException("Description can not be empty", HttpStatus.BAD_REQUEST);
         }
-        //validate cuisine
+     
         if(dto.getCuisine()==null || dto.getCuisine().trim().isEmpty()) {
         	throw new FooditemException("cuisine can not be empty", HttpStatus.BAD_REQUEST);
         }
-        //validate price
+     
         if(dto.getPrice()<=0) {
         	throw new FooditemException("price must be greater than 0", HttpStatus.BAD_REQUEST);
         }
-        //validate restaurant id
+       
         if(dto.getRestaurantId()<=0) {
         	throw new FooditemException("Restaurant ID must be greater than 0", HttpStatus.BAD_REQUEST);
         }
-        //find restaurant
+     
         Restaurant rest = repository.findById((long)dto.getRestaurantId()).orElse(null);
         if(rest==null) {
         	throw new FooditemException("Restaurant not found with id:+id", HttpStatus.NOT_FOUND);
         }
-        //check duplicate food name
+        
         Optional<FoodItem> existingfood=fooditemRepo.findByFoodnameIgnoreCaseAndRestaurantId(dto.getFoodname(), dto.getRestaurantId());
 		if(existingfood.isPresent()&&existingfood.get().getFoodid()!=id) {
 			throw new FooditemException("food already exists in the restaurant", HttpStatus.CONFLICT);
 		}
-		//update field
+		
 		item.setFoodname(dto.getFoodname());
 		item.setFoodtype(dto.getFoodtype());
 		item.setDescription(dto.getDescription());
@@ -176,9 +175,9 @@ public class FoodItemServiceImpl implements Fooditemservice{
 		item.setAvailable(dto.isAvailable());
 		item.setRestaurant(rest);
 		
-		//update item
+	
 		FoodItem updateditem= fooditemRepo.save(item);
-		//convert entity to dto
+
 		FoodItemDto response= new FoodItemDto();
 		response.setFoodname(updateditem.getFoodname());
 		response.setFoodtype(updateditem.getFoodtype());

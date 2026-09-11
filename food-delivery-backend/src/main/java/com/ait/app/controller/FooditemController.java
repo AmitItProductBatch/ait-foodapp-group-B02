@@ -27,9 +27,7 @@ public class FooditemController {
 	
 	@PostMapping("/add")
 	 ResponseEntity addfooditem(@RequestBody FoodItemDto dto) {
-		
 		fooditemservice.addfooditem(dto);
-		
 		return new ResponseEntity("fooditem added",HttpStatus.CREATED);
 		
 	 }
@@ -43,17 +41,14 @@ public class FooditemController {
 		
 	}
 	 @DeleteMapping("/delete/{id}")
-	void deletefooditem(@PathVariable int id) {
-		 fooditemservice.deletefooditem(id);
+	ResponseEntity<String> deletefooditem(@PathVariable int id) {
+	 fooditemservice.deletefooditem(id);
+		return new ResponseEntity("FoodItem deleted Succesfully",HttpStatus.OK);
 	}
 	 
 	 @PutMapping("/update/{id}")
-	 ResponseEntity<FoodItemDto> updateFoodItem(
-	         @PathVariable int id,
-	         @RequestBody FoodItemDto dto) {
-
+	 ResponseEntity<FoodItemDto> updateFoodItem( @PathVariable int id, @RequestBody FoodItemDto dto) {
 	     FoodItemDto updatedFood = fooditemservice.updateFoodItem(id, dto);
-
 	     return new ResponseEntity<>(updatedFood, HttpStatus.OK);
 	 }
 	 
@@ -62,7 +57,6 @@ public class FooditemController {
 
 	     List<FoodItemDto> foodItems =
 	             fooditemservice.getAllFoodItems();
-
 	     return new ResponseEntity<>(foodItems, HttpStatus.OK);
 	 }
 }
