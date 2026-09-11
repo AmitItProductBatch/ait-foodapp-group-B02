@@ -1,6 +1,8 @@
 package com.ait.app.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,31 +16,45 @@ import com.ait.app.entity.RestaurantAddress;
 import com.ait.app.service.RestaurantAddressService;
 
 @RestController
-@RequestMapping("api/restaurant-address")
+@RequestMapping("/api/restaurant-address")
 public class RestaurantAddressController {
-	
-	@Autowired
-	RestaurantAddressService restaurantAddressService;
 
-@PostMapping
-public RestaurantAddress saveRestaurantAddress(@RequestBody  RestaurantAddressRequestDto restaurantAddressRequestDto){
-	
-		RestaurantAddress restaurantAddress = restaurantAddressService.saveRestaurantAddress(restaurantAddressRequestDto);
-		
-		return restaurantAddress; 
-			
-}
+    @Autowired
+    RestaurantAddressService restaurantAddressService;
 
-@GetMapping("{id}")
-public RestaurantAddress getRestaurantAddressById(@PathVariable Long id) {
-	return restaurantAddressService.getRestaurantAddressById(id);
-}
+    @PostMapping
+    public ResponseEntity<RestaurantAddress> saveRestaurantAddress(
+            @RequestBody RestaurantAddressRequestDto restaurantAddressRequestDto) {
 
-@DeleteMapping("{id}")
-public String deleteRestaurantAddress(@PathVariable Long id) {
-	restaurantAddressService.deleteRestaurantAddress(id);
-	
-	return "Restaurant address is deleted Successfully";
-}
-	
+        RestaurantAddress restaurantAddress =
+                restaurantAddressService.saveRestaurantAddress(
+                        restaurantAddressRequestDto);
+
+        return new ResponseEntity<>(
+                restaurantAddress,
+                HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RestaurantAddress> getRestaurantAddressById(
+            @PathVariable Long id) {
+
+        RestaurantAddress restaurantAddress =
+                restaurantAddressService.getRestaurantAddressById(id);
+
+        return new ResponseEntity<>(
+                restaurantAddress,
+                HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteRestaurantAddress(
+            @PathVariable Long id) {
+
+        restaurantAddressService.deleteRestaurantAddress(id);
+
+        return new ResponseEntity<>(
+                "Restaurant address is deleted successfully",
+                HttpStatus.OK);
+    }
 }
