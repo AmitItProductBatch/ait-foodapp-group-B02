@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.ait.app.exception.FeedbackException;
 import com.ait.app.exception.FooditemException;
+import com.ait.app.exception.UserAddressException;
 import com.ait.app.exception.UserException;
 
 @ControllerAdvice
@@ -40,5 +41,9 @@ public class GlobalExceptionHandling {
                 feedbackException.getHttpStatus()
         );
     }
+	@ExceptionHandler(UserAddressException.class)
+	public ResponseEntity<String> UserAddressExceptionHandler(UserAddressException userAddressException) {
 
+		return new ResponseEntity(userAddressException.getMessage(), userAddressException.getHttpStatus());
+	}
 }

@@ -19,6 +19,9 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	UserRepository userRepository;
 
+	@Autowired
+	UserAddressServiceImpl uAddServ;
+	
 	@Override
 	public void saveUser(User user) {
 
@@ -32,6 +35,8 @@ public class UserServiceImpl implements UserService {
 		}
 
 		userRepository.save(user);
+		
+		
 	}
 
 	@Override
@@ -47,7 +52,7 @@ public class UserServiceImpl implements UserService {
 			dto.setEmail(user.getEmail());
 			dto.setMobile(user.getMobile());
 			dto.setRole(user.getRole());
-
+			dto.setAddresses(uAddServ.fetchAllUserAddressesByUserId(id));
 			return dto;
 
 		} else {
