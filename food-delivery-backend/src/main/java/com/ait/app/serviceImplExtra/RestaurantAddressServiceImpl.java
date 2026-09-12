@@ -1,11 +1,13 @@
 package com.ait.app.serviceImplExtra;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.ait.app.dto.RestaurantAddressRequestDto;
 import com.ait.app.entity.Restaurant;
 import com.ait.app.entity.RestaurantAddress;
+import com.ait.app.exception.RestaurantAddressException;
 import com.ait.app.repository.RestaurantAddressRepository;
 import com.ait.app.repository.RestaurantRepository;
 import com.ait.app.service.RestaurantAddressService;
@@ -14,7 +16,7 @@ import com.ait.app.service.RestaurantAddressService;
 public class RestaurantAddressServiceImpl implements RestaurantAddressService {
 	
 	@Autowired 
-	RestaurantAddressRepository restaurantAddressRepository;;
+	RestaurantAddressRepository restaurantAddressRepository;
 	
 	@Autowired
 	RestaurantRepository restaurantRepository;
@@ -25,7 +27,11 @@ public class RestaurantAddressServiceImpl implements RestaurantAddressService {
 		
 		RestaurantAddress restaurantAddress = new RestaurantAddress();
 		
-		Restaurant restaurant = restaurantRepository.findById(restaurantAddressRequestDto.getRestaurantId()).get();
+		Restaurant restaurant = restaurantRepository.findById(restaurantAddressRequestDto.getRestaurantId()).orElse(null);
+		
+		if(restaurant==null) {
+			throw new RestaurantAddressException("Restaurant not found", HttpStatus.NOT_FOUND);
+		}
 		
 		restaurantAddress.setRestaurant(restaurant);
 		
@@ -46,11 +52,21 @@ public class RestaurantAddressServiceImpl implements RestaurantAddressService {
 	@Override
 	public RestaurantAddress getRestaurantAddressById(Long id) {
 		
-		return restaurantAddressRepository.findById(id).get();
+		RestaurantAddress restaurantAddress = restaurantAddressRepository.findById(id).orElse(null);
+		
+		if(restaurantAddress==null) {
+			throw new RestaurantAddressException("Restaurant Address not found", HttpStatus.NOT_FOUND);
+		}
+		
+		return restaurantAddress;
 	}
 
 	@Override
 	public void deleteRestaurantAddress(Long id) {
+		
+		if(!restaurantAddressRepository.existsById(id)) {
+			throw new RestaurantAddressException("Restaurant Address not found", HttpStatus.NOT_FOUND);
+		}
 		
 		restaurantAddressRepository.deleteById(id);
 		

@@ -9,6 +9,8 @@ import com.ait.app.entity.Payment;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 	
+	Payment findPaymentById(Long id);
+	
 	 @Modifying
 	    @Query(value = """
 	            UPDATE payments

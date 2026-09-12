@@ -26,7 +26,7 @@ public class PaymentController {
 	@Autowired
     PaymentService paymentService;
 
-    @PostMapping("/add")
+    @PostMapping
     ResponseEntity<Payment> addPayment(@RequestBody PaymentRequestDto dto) {
 
         Payment payment = paymentService.addPayment(dto);
@@ -34,7 +34,7 @@ public class PaymentController {
         return new ResponseEntity<>(payment, HttpStatus.CREATED);
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     ResponseEntity<Payment> getPayment(@PathVariable Long id) {
 
         Payment payment = paymentService.getPayment(id);
@@ -50,7 +50,7 @@ public class PaymentController {
         return new ResponseEntity<>(payments, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     ResponseEntity<String> deletePayment(@PathVariable Long id) {
 
         paymentService.deletePayment(id);
@@ -58,10 +58,10 @@ public class PaymentController {
         return new ResponseEntity<>("Payment deleted", HttpStatus.OK);
     }
 
-    @PutMapping("/update-status/{id}")
+    @PutMapping("/{id}")
     ResponseEntity<Payment> updatePaymentStatus(
             @PathVariable Long id,
-            @RequestParam String status) {
+            @RequestParam  String status) {
 
         Payment payment = paymentService.updatePaymentStatus(id, status);
 
