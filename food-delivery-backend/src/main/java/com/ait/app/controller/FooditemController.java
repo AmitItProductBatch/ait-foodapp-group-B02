@@ -21,7 +21,7 @@ import com.ait.app.service.Fooditemservice;
 @RestController
 @RequestMapping("/Food")
 public class FooditemController {
-	
+		
 	@Autowired
 	Fooditemservice fooditemservice;
 	

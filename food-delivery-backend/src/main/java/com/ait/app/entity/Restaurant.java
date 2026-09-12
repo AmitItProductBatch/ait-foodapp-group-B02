@@ -43,14 +43,7 @@ public class Restaurant {
 	private List<FoodItem> foodItems;
 	
 
-
-	 
-
-
-	
-	
-	
-	
-	
+	@OneToMany(mappedBy = "restaurant")
+	private List<Feedback> feedbackList;
 	
 }
