@@ -40,6 +40,11 @@ public class Restaurant {
 
 	@OneToMany(mappedBy = "restaurant")
 	private List<FoodItem> foodItems;
+	
+
+	@OneToMany(mappedBy = "restaurant")
+	private List<Feedback> feedbackList;
+	
 
 	@OneToMany(mappedBy = "restaurant",cascade = CascadeType.ALL)
 	private List<Cart> carts;

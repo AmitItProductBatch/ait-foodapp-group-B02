@@ -32,4 +32,7 @@ public class User {
 	@OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
 	private List<UserAddress> addresses;
 
+	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+	private List<Feedback> feedbackList;
+	
 }
