@@ -1,13 +1,17 @@
 package com.ait.app.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ait.app.dto.CartResponse;
@@ -15,12 +19,13 @@ import com.ait.app.entity.Cart;
 import com.ait.app.service.CartService;
 
 @RestController
+@RequestMapping("/api/cart")
 public class CartController {
 
 	@Autowired
 	CartService cartService;
 
-	@PostMapping("/addCart")
+	@PostMapping("/add")
 	public ResponseEntity addCart(@RequestBody CartResponse dto) {
 
 		cartService.saveCart(dto);
@@ -28,7 +33,7 @@ public class CartController {
 		return new ResponseEntity("Cart added successfully", HttpStatus.CREATED);
 	}
 
-	@DeleteMapping("/deleteCart/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity deleteCart(@PathVariable int id) {
 
 		cartService.deleteCart(id);
@@ -36,7 +41,7 @@ public class CartController {
 		return new ResponseEntity("Cart deleted successfully", HttpStatus.OK);
 	}
 
-	@GetMapping("/getCart/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<Cart> getCart(@PathVariable int id) {
 
 		Cart cart = cartService.getCart(id);
@@ -44,4 +49,11 @@ public class CartController {
 		return new ResponseEntity(cart, HttpStatus.OK);
 	}
 
+	@GetMapping("/getAll")
+	public ResponseEntity getAllCart() {
+
+		List list = cartService.getAllCart();
+
+		return new ResponseEntity(list, HttpStatus.OK);
+	}
 }

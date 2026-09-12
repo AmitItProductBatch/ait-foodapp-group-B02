@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,23 +23,21 @@ public class Restaurant {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(nullable = false)
 	private String name;
-	
+
 	@Column(nullable = false, unique = true)
 	private String phone;
-	
+
 	@Column(nullable = false, unique = true)
 	private String email;
-	
-	
-	private String description;
-	
 
-	@OneToOne(mappedBy =  "restaurant")
+	private String description;
+
+	@OneToOne(mappedBy = "restaurant")
 	private RestaurantAddress restaurantAddress;
-	
+
 	@OneToMany(mappedBy = "restaurant")
 	private List<FoodItem> foodItems;
 	
@@ -46,4 +45,8 @@ public class Restaurant {
 	@OneToMany(mappedBy = "restaurant")
 	private List<Feedback> feedbackList;
 	
+
+	@OneToMany(mappedBy = "restaurant",cascade = CascadeType.ALL)
+	private List<Cart> carts;
+
 }

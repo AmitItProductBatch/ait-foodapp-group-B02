@@ -28,6 +28,9 @@ public class User {
 	
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	private Cart cart;
+	
+	@OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
+	private List<UserAddress> addresses;
 
 	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
 	private List<Feedback> feedbackList;
