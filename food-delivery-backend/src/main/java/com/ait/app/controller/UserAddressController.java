@@ -1,5 +1,7 @@
 package com.ait.app.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,14 +31,29 @@ public class UserAddressController {
     }
 
     @GetMapping("/{addressId}")
-    public ResponseEntity<UserAddressDto1> getAddressById(@PathVariable int addressId) {
+    public ResponseEntity getAddressById(@PathVariable int addressId) {
         UserAddressDto1 address = userAddressService.getAddressById(addressId);
-        return ResponseEntity.ok(address);
+        return new ResponseEntity(address,HttpStatus.OK);
     }
+    
+    @GetMapping("user/{userId}")
+    public ResponseEntity<List<UserAddressDto1>> getAllAddressesByUserId(@PathVariable int userId ) {
+        List<UserAddressDto1> addressList = userAddressService.fetchAllUserAddressesByUserId(userId);
+        return new ResponseEntity<List<UserAddressDto1>>(addressList,HttpStatus.OK);
+    }
+    
+    @GetMapping("user/{type}/{userId}")
+    public ResponseEntity<UserAddressDto1> getAddressByType(@PathVariable int userId,@PathVariable String type ) {
+        UserAddressDto1 address = userAddressService.getAddressByType(type, userId);
+        return new ResponseEntity<UserAddressDto1>(address,HttpStatus.OK);
+    }
+    
 
     @DeleteMapping("/{addressId}")
     public ResponseEntity deleteAddress(@PathVariable int addressId) {
         userAddressService.deleteAddress(addressId);
-        return ResponseEntity.ok("Address deleted successfully");
+        return new ResponseEntity("Address Deleted..",HttpStatus.OK);
     }
+    
+    
 }
