@@ -2,6 +2,8 @@ package com.ait.app.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,15 +26,16 @@ public class User {
 	private long mobile;
 	private String email;
 	private String role;
+	
+	
 	private String password;
 	
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
 	private Cart cart;
 	
 	@OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
+	@JsonIgnore
 	private List<UserAddress> addresses;
 
-	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
-	private List<Feedback> feedbackList;
-	
 }

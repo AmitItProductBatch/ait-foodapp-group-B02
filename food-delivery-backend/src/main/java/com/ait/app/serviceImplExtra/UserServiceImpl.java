@@ -2,6 +2,7 @@ package com.ait.app.serviceImplExtra;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	UserAddressServiceImpl uAddServ;
-	
+
 	@Override
 	public void saveUser(User user) {
 
@@ -35,8 +36,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		userRepository.save(user);
-		
-		
+
 	}
 
 	@Override
@@ -44,8 +44,13 @@ public class UserServiceImpl implements UserService {
 
 		if (userRepository.existsById(id)) {
 
-			User user = userRepository.findById(id).get();
+			Optional<User> o = userRepository.findById(id);
+			if (o.isEmpty()) {
 
+				throw new UserException("User not found", HttpStatus.NOT_FOUND);
+			}
+			
+			User user = o.get();
 			UserResponse dto = new UserResponse();
 
 			dto.setName(user.getName());
@@ -130,7 +135,7 @@ public class UserServiceImpl implements UserService {
 		if (l.isEmpty()) {
 
 			throw new UserException("List is empty", HttpStatus.NOT_FOUND);
-			
+
 		} else {
 
 			userRepository.deleteAll();

@@ -36,16 +36,14 @@ public class Restaurant {
 	private String description;
 
 	@OneToOne(mappedBy = "restaurant")
+	@JsonIgnore
 	private RestaurantAddress restaurantAddress;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "restaurant")
 	private List<FoodItem> foodItems;
-	
 
-	@OneToMany(mappedBy = "restaurant")
-	private List<Feedback> feedbackList;
-	
-
+	@JsonIgnore
 	@OneToMany(mappedBy = "restaurant",cascade = CascadeType.ALL)
 	private List<Cart> carts;
 

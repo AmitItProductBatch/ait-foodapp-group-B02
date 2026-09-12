@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.ait.app.exception.CartItemServiceException;
 import com.ait.app.exception.CartServiceException;
 import com.ait.app.exception.FeedbackException;
 import com.ait.app.exception.FooditemException;
@@ -48,6 +49,15 @@ public class GlobalExceptionHandling {
 		return new ResponseEntity("Something went wrong", HttpStatus.BAD_REQUEST);
 	}
 
+	@ExceptionHandler(UserAddressException.class)
+	public ResponseEntity<String> handleUserAddressServiceException(UserAddressException userAddressException) {
+
 		return new ResponseEntity(userAddressException.getMessage(), userAddressException.getHttpStatus());
+	}
+
+	@ExceptionHandler(CartItemServiceException.class)
+	public ResponseEntity<String> handleCartItemServiceException(CartItemServiceException cartItemServiceException) {
+
+		return new ResponseEntity<>(cartItemServiceException.getMessage(), cartItemServiceException.getHttpStatus());
 	}
 }
