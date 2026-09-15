@@ -9,6 +9,7 @@ import com.ait.app.exception.CartItemServiceException;
 import com.ait.app.exception.CartServiceException;
 import com.ait.app.exception.FeedbackException;
 import com.ait.app.exception.FooditemException;
+import com.ait.app.exception.OrderException;
 import com.ait.app.exception.PaymentException;
 import com.ait.app.exception.RestaurantAddressException;
 import com.ait.app.exception.RestaurantException;
@@ -59,5 +60,11 @@ public class GlobalExceptionHandling {
 	public ResponseEntity<String> handleCartItemServiceException(CartItemServiceException cartItemServiceException) {
 
 		return new ResponseEntity<>(cartItemServiceException.getMessage(), cartItemServiceException.getHttpStatus());
+	}
+
+	@ExceptionHandler(OrderException.class)
+	public ResponseEntity<String> orderExceptionHandler(OrderException orderException) {
+
+		return new ResponseEntity<>(orderException.getMessage(), orderException.getHttpStatus());
 	}
 }
