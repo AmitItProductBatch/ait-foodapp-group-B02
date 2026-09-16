@@ -51,5 +51,7 @@ public class Restaurant {
 	@JsonIgnore
 	@OneToMany(mappedBy = "restaurant",cascade = CascadeType.ALL)
 	private List<Cart> carts;
+	
+	private boolean open;
 
 }
