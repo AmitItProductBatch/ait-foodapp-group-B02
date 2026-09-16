@@ -1,5 +1,7 @@
 package com.ait.app.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,12 +19,13 @@ import com.ait.app.entity.RestaurantAddress;
 import com.ait.app.service.RestaurantAddressService;
 
 @RestController
-@RequestMapping("/api/restaurant-address")
+@RequestMapping("/api/restaurant-addresses")
 public class RestaurantAddressController {
 
     @Autowired
     RestaurantAddressService restaurantAddressService;
 
+    
     @PostMapping
     public ResponseEntity<RestaurantAddress> saveRestaurantAddress(
             @RequestBody RestaurantAddressRequestDto restaurantAddressRequestDto) {
@@ -35,6 +39,19 @@ public class RestaurantAddressController {
                 HttpStatus.CREATED);
     }
 
+    
+    @GetMapping
+    public ResponseEntity<List<RestaurantAddress>> getAllRestaurantAddresses() {
+
+        List<RestaurantAddress> restaurantAddresses =
+                restaurantAddressService.getAllRestaurantAddresses();
+
+        return new ResponseEntity<>(
+                restaurantAddresses,
+                HttpStatus.OK);
+    }
+
+   
     @GetMapping("/{id}")
     public ResponseEntity<RestaurantAddress> getRestaurantAddressById(
             @PathVariable Long id) {
@@ -47,6 +64,23 @@ public class RestaurantAddressController {
                 HttpStatus.OK);
     }
 
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<RestaurantAddress> updateRestaurantAddress(
+            @PathVariable Long id,
+            @RequestBody RestaurantAddressRequestDto restaurantAddressRequestDto) {
+
+        RestaurantAddress restaurantAddress =
+                restaurantAddressService.updateRestaurantAddress(
+                        id,
+                        restaurantAddressRequestDto);
+
+        return new ResponseEntity<>(
+                restaurantAddress,
+                HttpStatus.OK);
+    }
+
+   
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteRestaurantAddress(
             @PathVariable Long id) {
