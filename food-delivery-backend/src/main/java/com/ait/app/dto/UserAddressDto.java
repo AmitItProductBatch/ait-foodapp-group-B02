@@ -9,24 +9,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class UserAddressDto {
- 
-    private String houseNo;
 
-    private String buildingName;
+	private String houseNo;
 
-    private String street;
+	private String buildingName;
 
-    private String landmark;
+	private String street;
 
-    private String area;
-    
-    private String city;
+	private String landmark;
 
-    private String state;
+	private String area;
 
-    private Long pincode;
+	private String city;
 
-    private String addressType;
+	private String state;
 
-    private int userId;
+	private Long pincode;
+
+	private String addressType;
+
+	private int userId;
+
+	private double latitude;
+	private double longitude;
 }

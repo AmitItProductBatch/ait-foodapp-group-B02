@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,5 +56,9 @@ public class UserAddressController {
         return new ResponseEntity("Address Deleted..",HttpStatus.OK);
     }
     
-    
+    @PutMapping("/{addressId}")
+    public ResponseEntity updateAddress(@PathVariable int addressId,@RequestBody UserAddressDto addressDto) {
+        UserAddressDto1 updatedAddress = userAddressService.updateAddress(addressId, addressDto);
+        return new ResponseEntity("Address Updated..", HttpStatus.OK);
+    } 
 }
