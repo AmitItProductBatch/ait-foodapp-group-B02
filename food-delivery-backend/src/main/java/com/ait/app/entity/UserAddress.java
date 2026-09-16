@@ -27,5 +27,7 @@ public class UserAddress {
     private Long pincode;
 
     private String addressType; 
-    //private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

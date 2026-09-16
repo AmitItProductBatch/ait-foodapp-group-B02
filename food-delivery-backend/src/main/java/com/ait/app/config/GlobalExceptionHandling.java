@@ -26,11 +26,11 @@ public class GlobalExceptionHandling {
 
     @ExceptionHandler(FooditemException.class)
     public ResponseEntity<String> handleFooditemException(
-            FooditemException foodexception) {
+            FooditemException fooditemException) {
 
         return new ResponseEntity<>(
-                foodexception.getMessage(),
-                foodexception.getHttpStatus());
+                fooditemException.getMessage(),
+                fooditemException.getHttpStatus());
     }
 
     @ExceptionHandler(RestaurantException.class)
