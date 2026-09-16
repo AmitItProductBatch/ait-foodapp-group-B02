@@ -13,58 +13,71 @@ import com.ait.app.exception.OrderException;
 import com.ait.app.exception.PaymentException;
 import com.ait.app.exception.RestaurantAddressException;
 import com.ait.app.exception.RestaurantException;
-
-import com.ait.app.exception.UserAddressException;
 import com.ait.app.exception.UserException;
 
 @ControllerAdvice
 public class GlobalExceptionHandling {
 
-	@ExceptionHandler(UserException.class)
-	public ResponseEntity<String> handleUserException(UserException userException) {
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<String> handleUserException(
+            UserException userException) {
 
-		return new ResponseEntity(userException.getMessage(), userException.getHttpStatus());
-	}
+        return new ResponseEntity<>(
+                userException.getMessage(),
+                userException.getHttpStatus());
+    }
 
-	@ExceptionHandler(FooditemException.class)
-	public ResponseEntity<String> handlefooditemException(FooditemException foodexception) {
-		return new ResponseEntity(foodexception.getMessage(), foodexception.getHttpStatus());
+    @ExceptionHandler(FooditemException.class)
+    public ResponseEntity<String> handleFooditemException(
+            FooditemException fooditemException) {
 
-	}
+        return new ResponseEntity<>(
+                fooditemException.getMessage(),
+                fooditemException.getHttpStatus());
+    }
 
-	@ExceptionHandler(FeedbackException.class)
-	public ResponseEntity<String> handleFeedbackException(FeedbackException feedbackException) {
+    @ExceptionHandler(RestaurantException.class)
+    public ResponseEntity<String> handleRestaurantException(
+            RestaurantException restaurantException) {
 
-		return new ResponseEntity<>(feedbackException.getMessage(), feedbackException.getHttpStatus());
-	}
+        return new ResponseEntity<>(
+                restaurantException.getMessage(),
+                restaurantException.getHttpStatus());
+    }
 
-	@ExceptionHandler(CartServiceException.class)
-	public ResponseEntity<String> handleCartServiceException(CartServiceException cartServiceException) {
+    @ExceptionHandler(RestaurantAddressException.class)
+    public ResponseEntity<String> handleRestaurantAddressException(
+            RestaurantAddressException restaurantAddressException) {
 
-		return new ResponseEntity(cartServiceException.getMessage(), cartServiceException.getHttpStatus());
-	}
+        return new ResponseEntity<>(
+                restaurantAddressException.getMessage(),
+                restaurantAddressException.getHttpStatus());
+    }
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<String> handleException(Exception exception) {
+    @ExceptionHandler(PaymentException.class)
+    public ResponseEntity<String> handlePaymentException(
+            PaymentException paymentException) {
 
-		return new ResponseEntity("Something went wrong", HttpStatus.BAD_REQUEST);
-	}
+        return new ResponseEntity<>(
+                paymentException.getMessage(),
+                paymentException.getHttpStatus());
+    }
 
-	@ExceptionHandler(UserAddressException.class)
-	public ResponseEntity<String> handleUserAddressServiceException(UserAddressException userAddressException) {
+    @ExceptionHandler(FeedbackException.class)
+    public ResponseEntity<String> handleFeedbackException(
+            FeedbackException feedbackException) {
 
-		return new ResponseEntity(userAddressException.getMessage(), userAddressException.getHttpStatus());
-	}
+        return new ResponseEntity<>(
+                feedbackException.getMessage(),
+                feedbackException.getHttpStatus());
+    }
 
-	@ExceptionHandler(CartItemServiceException.class)
-	public ResponseEntity<String> handleCartItemServiceException(CartItemServiceException cartItemServiceException) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(
+            Exception exception) {
 
-		return new ResponseEntity<>(cartItemServiceException.getMessage(), cartItemServiceException.getHttpStatus());
-	}
-
-	@ExceptionHandler(OrderException.class)
-	public ResponseEntity<String> orderExceptionHandler(OrderException orderException) {
-
-		return new ResponseEntity<>(orderException.getMessage(), orderException.getHttpStatus());
-	}
+        return new ResponseEntity<>(
+                "Something went wrong",
+                HttpStatus.BAD_REQUEST);
+    }
 }
