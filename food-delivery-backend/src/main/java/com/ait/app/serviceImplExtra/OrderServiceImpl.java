@@ -10,25 +10,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.ait.app.dto.OrderItemRequestDto;
 import com.ait.app.dto.OrderItemResponseDto;
 import com.ait.app.dto.OrderRequestDto;
 import com.ait.app.dto.OrderResponseDto;
-import com.ait.app.entity.FoodItem;
+import com.ait.app.entity.Cart;
+import com.ait.app.entity.CartItem;
 import com.ait.app.entity.Order;
 import com.ait.app.entity.OrderItem;
 import com.ait.app.entity.Restaurant;
 import com.ait.app.entity.User;
 import com.ait.app.entity.UserAddress;
 import com.ait.app.exception.OrderException;
-import com.ait.app.repository.FooditemRepo;
+import com.ait.app.repository.CartItemRepository;
+import com.ait.app.repository.CartRepository;
 import com.ait.app.repository.OrderRepository;
 import com.ait.app.repository.RestaurantRepository;
 import com.ait.app.repository.UserAddressRepository;
 import com.ait.app.repository.UserRepository;
 import com.ait.app.service.OrderService;
-
-
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -40,19 +39,22 @@ public class OrderServiceImpl implements OrderService {
 	UserRepository userRepository;
 
 	@Autowired
-	FooditemRepo fooditemRepo;
-
-	@Autowired
 	RestaurantRepository restaurantRepository;
 
 	@Autowired
 	UserAddressRepository userAddressRepository;
 
+	@Autowired
+	CartRepository cartRepository;
+
+	@Autowired
+	CartItemRepository cartItemRepository;
+
 	@Override
-	public void createOrder(OrderRequestDto dto) {
+	public OrderResponseDto createOrder(OrderRequestDto dto) {
 
 		if (dto.getUserId() <= 0) {
-			throw new OrderException("User Cannot be null", HttpStatus.BAD_REQUEST);
+			throw new OrderException("User Id is required", HttpStatus.BAD_REQUEST);
 		}
 
 		Optional<User> userOptional = userRepository.findById(dto.getUserId());
@@ -63,36 +65,40 @@ public class OrderServiceImpl implements OrderService {
 
 		User user = userOptional.get();
 
-		if (dto.getRestaurantId() <= 0) {
-			throw new OrderException("Restaurant Id is required", HttpStatus.BAD_REQUEST);
+		Optional<Cart> cartOptional = cartRepository.findByUserId(dto.getUserId());
+
+		if (cartOptional.isEmpty()) {
+			throw new OrderException("Cart not found for user", HttpStatus.NOT_FOUND);
 		}
 
-		Optional<Restaurant> restaurantOptional = restaurantRepository.findById(dto.getRestaurantId());
+		Cart cart = cartOptional.get();
 
-		if (restaurantOptional.isEmpty()) {
-			throw new OrderException("Restaurant not found", HttpStatus.NOT_FOUND);
+		List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
+
+		if (cartItems == null || cartItems.isEmpty()) {
+			throw new OrderException("Cart is empty", HttpStatus.BAD_REQUEST);
 		}
 
-		Restaurant restaurant = restaurantOptional.get();
+		Restaurant restaurant = cart.getRestaurant();
+
+		if (restaurant == null) {
+			throw new OrderException("Restaurant not found in cart", HttpStatus.NOT_FOUND);
+		}
 
 		if (restaurant.isOpen() == false) {
 			throw new OrderException("Restaurant is closed", HttpStatus.BAD_REQUEST);
 		}
 
-		Optional<UserAddress> userAddress = userAddressRepository.findById(dto.getDeliveryAddressId());
+		Optional<UserAddress> userAddressOptional = userAddressRepository.findById(dto.getDeliveryAddressId());
 
-		if (userAddress.isEmpty()) {
+		if (userAddressOptional.isEmpty()) {
 			throw new OrderException("Delivery address not found", HttpStatus.NOT_FOUND);
 		}
 
-		if (userAddress.get().getUser().getId() != user.getId()) {
+		UserAddress userAddress = userAddressOptional.get();
+
+		if (userAddress.getUser().getId() != user.getId()) {
 			throw new OrderException("Delivery address does not belong to this user", HttpStatus.BAD_REQUEST);
-		}
-
-		UserAddress userAddress2 = userAddress.get();
-
-		if (dto.getItems() == null || dto.getItems().isEmpty()) {
-			throw new OrderException("Order must contain at least one item", HttpStatus.BAD_REQUEST);
 		}
 
 		Order order = new Order();
@@ -100,7 +106,9 @@ public class OrderServiceImpl implements OrderService {
 		order.setUser(user);
 		order.setRestaurant(restaurant);
 
-		String deliveryAddress = userAddress2.getHouseNo() + ", " + userAddress2.getBuildingName() + ", "+ userAddress2.getStreet() + ", " + userAddress2.getArea() + ", " + userAddress2.getCity() + ", "+ userAddress2.getState() + " - " + userAddress2.getPincode();
+		String deliveryAddress = userAddress.getHouseNo() + ", " + userAddress.getBuildingName() + ", "
+				+ userAddress.getStreet() + ", " + userAddress.getArea() + ", " + userAddress.getCity() + ", "
+				+ userAddress.getState() + " - " + userAddress.getPincode();
 
 		order.setDeliveryAddress(deliveryAddress);
 
@@ -109,53 +117,28 @@ public class OrderServiceImpl implements OrderService {
 		order.setPaymentStatus("PENDING");
 		order.setCreatedAt(LocalDateTime.now());
 
-		
-		
-		
-		
-		
-		BigDecimal subtotal = BigDecimal.ZERO;
-
 		List<OrderItem> orderItems = new ArrayList<OrderItem>();
 
-		for (OrderItemRequestDto itemDto : dto.getItems()) {
+		BigDecimal subtotal = BigDecimal.ZERO;
 
-			if (itemDto.getMenuItemId() <= 0) {
-				throw new OrderException("Invalid food item id", HttpStatus.BAD_REQUEST);
-			}
-
-			if (itemDto.getQuantity() == null || itemDto.getQuantity() <= 0) {
-
-				throw new OrderException("Quantity must be greater than zero", HttpStatus.BAD_REQUEST);
-			}
-
-			Optional<FoodItem> foodItemOptional = fooditemRepo.findById(itemDto.getMenuItemId());
-
-			if (foodItemOptional.isEmpty()) {
-				throw new OrderException("Food item not found with id : " + itemDto.getMenuItemId(),HttpStatus.NOT_FOUND);
-			}
-
-			FoodItem foodItem = foodItemOptional.get();
-
-			if (foodItem.isAvailable() == false) {
-				throw new OrderException("Food item is not available : " + foodItem.getFoodname(),HttpStatus.BAD_REQUEST);
-			}
-
-			if (foodItem.getRestaurant().getId() != restaurant.getId()) {
-				throw new OrderException("Food item does not belong to this restaurant", HttpStatus.BAD_REQUEST);
-			}
-
-			BigDecimal unitPrice = BigDecimal.valueOf(foodItem.getPrice());
-
-			BigDecimal totalPrice = unitPrice.multiply(BigDecimal.valueOf(itemDto.getQuantity()));
+		for (CartItem cartItem : cartItems) {
 
 			OrderItem orderItem = new OrderItem();
 
 			orderItem.setOrder(order);
-			orderItem.setFoodItem(foodItem);
-			orderItem.setItemName(foodItem.getFoodname());
+
+			orderItem.setFoodItem(cartItem.getFoodItem());
+
+			orderItem.setItemName(cartItem.getFoodItem().getFoodname());
+
+			BigDecimal unitPrice = BigDecimal.valueOf(cartItem.getUnitPrice());
+
+			BigDecimal totalPrice = unitPrice.multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+
 			orderItem.setUnitPrice(unitPrice);
-			orderItem.setQuantity(itemDto.getQuantity());
+
+			orderItem.setQuantity(cartItem.getQuantity());
+
 			orderItem.setTotalPrice(totalPrice);
 
 			orderItems.add(orderItem);
@@ -164,18 +147,17 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		order.setOrderItems(orderItems);
+
 		order.setSubtotal(subtotal);
 
-		
-		
-		
 		BigDecimal discount = BigDecimal.ZERO;
+
 		BigDecimal tax = BigDecimal.ZERO;
+
 		BigDecimal deliveryFee = BigDecimal.ZERO;
+
 		BigDecimal packagingFee = BigDecimal.ZERO;
 
-		
-		
 		order.setTax(tax);
 		order.setDeliveryFee(deliveryFee);
 		order.setPackagingFee(packagingFee);
@@ -184,15 +166,15 @@ public class OrderServiceImpl implements OrderService {
 
 		order.setTotalAmount(totalAmount);
 
-		
-		
-		
 		Order savedOrder = orderRepository.save(order);
+
+		cartItemRepository.deleteByCartId(cart.getId());
 
 		OrderResponseDto response = convertToResponseDto(savedOrder);
 
 		response.setDiscount(discount);
 
+		return response;
 	}
 
 	@Override
@@ -285,17 +267,25 @@ public class OrderServiceImpl implements OrderService {
 		OrderResponseDto response = new OrderResponseDto();
 
 		response.setOrderId((long) order.getId());
+
 		response.setUserId((long) order.getUser().getId());
+
 		response.setRestaurantId(order.getRestaurant().getId());
 
 		response.setSubtotal(order.getSubtotal());
+
 		response.setTax(order.getTax());
+
 		response.setDeliveryFee(order.getDeliveryFee());
+
 		response.setPackagingFee(order.getPackagingFee());
+
 		response.setTotalAmount(order.getTotalAmount());
 
 		response.setOrderStatus(order.getOrderStatus());
+
 		response.setPaymentStatus(order.getPaymentStatus());
+
 		response.setCreatedAt(order.getCreatedAt());
 
 		List<OrderItemResponseDto> itemResponseList = new ArrayList<OrderItemResponseDto>();
@@ -309,8 +299,11 @@ public class OrderServiceImpl implements OrderService {
 				itemResponse.setMenuItemId((long) item.getFoodItem().getFoodid());
 
 				itemResponse.setItemName(item.getItemName());
+
 				itemResponse.setQuantity(item.getQuantity());
+
 				itemResponse.setUnitPrice(item.getUnitPrice());
+
 				itemResponse.setTotalPrice(item.getTotalPrice());
 
 				itemResponseList.add(itemResponse);

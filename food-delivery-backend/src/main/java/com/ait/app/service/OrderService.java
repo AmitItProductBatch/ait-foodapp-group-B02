@@ -8,7 +8,7 @@ import com.ait.app.dto.OrderResponseDto;
 
 public interface OrderService {
 
-	void createOrder(OrderRequestDto order);
+	OrderResponseDto createOrder(OrderRequestDto order);
 
 	List<OrderResponseDto> getAllOrders();
 
