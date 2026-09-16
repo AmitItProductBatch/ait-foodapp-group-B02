@@ -33,8 +33,9 @@ public class Cart {
 
 	@PrePersist
 	public void onCreate() {
-		createdAt = LocalDateTime.now(ZoneId.of("Asia/Kolkata"));
-		updatedAt = LocalDateTime.now(ZoneId.of("Asia/Kolkata"));
+		LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Kolkata"));
+        createdAt = now;
+        updatedAt = now;
 	}
 
 	@PreUpdate
