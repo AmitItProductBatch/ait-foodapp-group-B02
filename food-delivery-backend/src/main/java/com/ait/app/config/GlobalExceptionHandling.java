@@ -5,8 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.ait.app.exception.CartItemServiceException;
+import com.ait.app.exception.CartServiceException;
 import com.ait.app.exception.FeedbackException;
 import com.ait.app.exception.FooditemException;
+import com.ait.app.exception.OrderException;
 import com.ait.app.exception.PaymentException;
 import com.ait.app.exception.RestaurantAddressException;
 import com.ait.app.exception.RestaurantException;

@@ -15,7 +15,7 @@ public interface UserService {
 
 	public List<UserResponse> getAllUsers();
 
-	public User updateUser(int id, User user);
+	public UserResponse updateUser(int id, User user);
 
 	public void deleteAllUsers();
 }

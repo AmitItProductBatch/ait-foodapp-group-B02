@@ -6,5 +6,7 @@ import lombok.Data;
 public class CartResponse {
 
 	private int userId;
-	
+	private long restaurentId;
+
 }
+

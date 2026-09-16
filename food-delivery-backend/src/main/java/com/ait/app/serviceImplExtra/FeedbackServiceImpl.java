@@ -2,6 +2,7 @@ package com.ait.app.serviceImplExtra;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,11 +10,15 @@ import org.springframework.stereotype.Service;
 
 import com.ait.app.dto.FeedbackDto;
 import com.ait.app.entity.Feedback;
+import com.ait.app.entity.FoodItem;
+import com.ait.app.entity.Restaurant;
+import com.ait.app.entity.User;
 import com.ait.app.exception.FeedbackException;
 import com.ait.app.exception.FooditemException;
 import com.ait.app.repository.FeedbackRepository;
 import com.ait.app.repository.FooditemRepo;
 import com.ait.app.repository.RestaurantRepository;
+import com.ait.app.repository.UserRepository;
 import com.ait.app.service.FeedbackService;
 
 @Service
@@ -28,56 +33,85 @@ public class FeedbackServiceImpl implements FeedbackService {
 	@Autowired
 	FooditemRepo fooditemRepo;
 
+	@Autowired
+	UserRepository userRepository;
+
 	@Override
 	public Feedback createFeedback(FeedbackDto feedbackDto) {
 
-		if (!restaurantRepository.findById(feedbackDto.getRestaurantId()).isPresent()) {
+		Optional<User> uo = userRepository.findById(feedbackDto.getUserId());
 
-			throw new FeedbackException("Restaurant Not found", HttpStatus.NOT_FOUND);
+		if (!uo.isPresent()) {
+			throw new FeedbackException("User Not Found", HttpStatus.NOT_FOUND);
+
 		}
+
+		User u = uo.get();
+
+		Optional<Restaurant> ro = restaurantRepository.findById(feedbackDto.getRestaurantId());
+
+		if (!ro.isPresent()) {
+
+			throw new FeedbackException("Restaurant Not Found ", HttpStatus.NOT_FOUND);
+
+		}
+
+		Restaurant restaurant = ro.get();
+
+		FoodItem foodItem = null;
 
 		if (feedbackDto.getFoodItemId() != null) {
 
-			if (!fooditemRepo.findById(feedbackDto.getFoodItemId()).isPresent()) {
+			Optional<FoodItem> foodOp = fooditemRepo.findById(feedbackDto.getFoodItemId());
 
-				throw new FeedbackException("FoodItem Not found", HttpStatus.NOT_FOUND);
+			if (!foodOp.isPresent()) {
+				throw new FeedbackException("FoodItem Not Found", HttpStatus.NOT_FOUND);
+
 			}
+
+			foodItem = foodOp.get();
 		}
 
 		if (feedbackDto.getRating() < 1 || feedbackDto.getRating() > 5) {
-
 			throw new FeedbackException("Rating must be between 1 and 5", HttpStatus.BAD_REQUEST);
 		}
 
-		if (feedbackDto.getFoodItemId() == null) {
+		if (foodItem == null) {
+			Optional<Feedback> existFeedback = feedbackRepository
+					.findByUser_IdAndRestaurant_IdAndFoodItemIsNull(u.getId(), restaurant.getId());
 
-			if (feedbackRepository.findByUserIdAndRestaurantIdAndFoodItemIdIsNull(feedbackDto.getUserId(),
-					feedbackDto.getRestaurantId()).isPresent()) {
-
+			if (existFeedback.isPresent()) {
 				throw new FeedbackException("You have already rated this restaurant", HttpStatus.CONFLICT);
+
 			}
 
 		} else {
 
-			if (feedbackRepository.findByUserIdAndRestaurantIdAndFoodItemId(feedbackDto.getUserId(),
-					feedbackDto.getRestaurantId(), feedbackDto.getFoodItemId()).isPresent()) {
+			// Duplicate food rating
+			Optional<Feedback> existFeedback = feedbackRepository.findByUser_IdAndRestaurant_IdAndFoodItem_Foodid(
+					u.getId(), restaurant.getId(), foodItem.getFoodid());
 
+			if (existFeedback.isPresent()) {
 				throw new FeedbackException("You have already rated this food item", HttpStatus.CONFLICT);
 			}
 		}
 
 		Feedback feedback = new Feedback();
 
-		feedback.setUserId(feedbackDto.getUserId());
-		feedback.setRestaurantId(feedbackDto.getRestaurantId());
-		feedback.setFoodItemId(feedbackDto.getFoodItemId());
+		feedback.setUser(u);
+		feedback.setRestaurant(restaurant);
+		feedback.setFoodItem(foodItem);
+
 		feedback.setRating(feedbackDto.getRating());
 		feedback.setComment(feedbackDto.getComment());
 
-		feedback.setCreatedAt(LocalDateTime.now());
-		feedback.setUpdatedAt(LocalDateTime.now());
+		LocalDateTime now = LocalDateTime.now();
+
+		feedback.setCreatedAt(now);
+		feedback.setUpdatedAt(now);
 
 		return feedbackRepository.save(feedback);
+
 	}
 
 	@Override
@@ -89,19 +123,26 @@ public class FeedbackServiceImpl implements FeedbackService {
 	@Override
 	public List<Feedback> getRestaurantFeedback(Long restaurantId) {
 
-		if (!restaurantRepository.findById(restaurantId).isPresent()) {
+		Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
 
+		if (!restaurantOptional.isPresent()) {
 			throw new FeedbackException("Restaurant Not Found", HttpStatus.NOT_FOUND);
+
 		}
 
-		return feedbackRepository.findByRestaurantId(restaurantId);
+		return feedbackRepository.findByRestaurant_Id(restaurantId);
 	}
 
 	@Override
 	public Feedback getFeedbackById(int id) {
 
-		return feedbackRepository.findById(id)
-				.orElseThrow(() -> new FeedbackException("Feedback not found", HttpStatus.NOT_FOUND));
+		Optional<Feedback> o = feedbackRepository.findById(id);
+		if (!o.isPresent()) {
+			throw new FeedbackException("FeedBack Not Found ", HttpStatus.NOT_FOUND);
+
+		}
+
+		return o.get();
 	}
 
 	@Override
@@ -118,29 +159,39 @@ public class FeedbackServiceImpl implements FeedbackService {
 	@Override
 	public Feedback updateFeedback(int feedbackId, FeedbackDto feedbackDto) {
 
-		Feedback feedback = feedbackRepository.findById(feedbackId)
-				.orElseThrow(() -> new FeedbackException("Feedback Not Found", HttpStatus.NOT_FOUND));
+		Optional<Feedback> optional = feedbackRepository.findById(feedbackId);
 
-		if (feedback.getUserId() != feedbackDto.getUserId()) {
-			throw new FeedbackException("You are not allowe to edit this feedback ", HttpStatus.FORBIDDEN);
-
+		if (!optional.isPresent()) {
+			throw new FeedbackException("Feedback Not Found", HttpStatus.NOT_FOUND);
 		}
 
+		Feedback feedback = optional.get();
+
+		// Check original author
+		if (feedback.getUser().getId() != feedbackDto.getUserId()) {
+
+			throw new FeedbackException("You are not allowed to edit this feedback", HttpStatus.FORBIDDEN);
+		}
+
+	
 		if (feedback.getCreatedAt().plusDays(30).isBefore(LocalDateTime.now())) {
 
-			throw new FeedbackException("Feedback can Only be edited within 30 days ", HttpStatus.FORBIDDEN);
+			throw new FeedbackException("Feedback can only be edited within 30 days", HttpStatus.FORBIDDEN);
 		}
 
-		if (feedback.getRating() < 1 || feedback.getRating() > 5) {
 
-			throw new FeedbackException("Rating must between 1 to 5", HttpStatus.BAD_REQUEST);
+		if (feedbackDto.getRating() < 1 || feedbackDto.getRating() > 5) {
 
+			throw new FeedbackException("Rating must be between 1 and 5", HttpStatus.BAD_REQUEST);
 		}
 
-		feedback.setComment(feedbackDto.getComment());
+		
 		feedback.setRating(feedbackDto.getRating());
+		feedback.setComment(feedbackDto.getComment());
+
 		feedback.setUpdatedAt(LocalDateTime.now());
 
 		return feedbackRepository.save(feedback);
 	}
+
 }

@@ -113,7 +113,7 @@ public class UserAddressServiceImpl implements UserAddressService {
               throw new UserAddressException("User Not found with Id",HttpStatus.NOT_FOUND); 
    		List<UserAddress> addressList = user.get().getAddresses();
    		for(	UserAddress us :  addressList) {
-   			if(us.getAddressType().equals(type))
+   			if(us.getAddressType().equalsIgnoreCase(type))
    				 userA = us; 
    		}
    		

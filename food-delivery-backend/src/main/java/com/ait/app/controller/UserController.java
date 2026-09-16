@@ -19,13 +19,13 @@ import com.ait.app.entity.User;
 import com.ait.app.service.UserService;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
 
 	@Autowired
 	UserService userService;
 
-	@PostMapping("/register")
+	@PostMapping
 	public ResponseEntity addUser(@RequestBody User user) {
 
 		userService.saveUser(user);
@@ -48,7 +48,7 @@ public class UserController {
 		return new ResponseEntity("User deleted successfully", HttpStatus.OK);
 	}
 
-	@GetMapping("/getAll")
+	@GetMapping
 	public ResponseEntity getAllUsers() {
 
 		List<UserResponse> list = userService.getAllUsers();
@@ -57,15 +57,15 @@ public class UserController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody User user) {
+	public ResponseEntity updateUser(@PathVariable int id, @RequestBody User user) {
 
-		User updatedUser = userService.updateUser(id, user);
+		UserResponse updatedUser = userService.updateUser(id, user);
 
 		return new ResponseEntity(updatedUser, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/deleteAll")
-	public ResponseEntity<String> deleteAllUsers() {
+	@DeleteMapping
+	public ResponseEntity deleteAllUsers() {
 
 		userService.deleteAllUsers();
 

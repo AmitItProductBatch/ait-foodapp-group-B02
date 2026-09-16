@@ -29,52 +29,52 @@ public class FeedbackController {
 	@PostMapping
 	public ResponseEntity<String> createFeedback(@RequestBody FeedbackDto feedbackDto) {
 
-	    feedbackService.createFeedback(feedbackDto);
+		feedbackService.createFeedback(feedbackDto);
 
-	    return new ResponseEntity<>(
-	            "Feedback Created Successfully",
-	            HttpStatus.CREATED
-	    );
+		return new ResponseEntity<>("Feedback Created Successfully", HttpStatus.CREATED);
+
 	}
-	
-	@GetMapping
-	public ResponseEntity<List<Feedback>> getAllFeedback(){
-		 return ResponseEntity.ok(
-	                feedbackService.getAllFeedback()
-	        );
+
+	@GetMapping()
+	ResponseEntity<List<Feedback>> getAllFeedback() {
+
+		List<Feedback> feedbacks = feedbackService.getAllFeedback();
+
+		return new ResponseEntity<>(feedbacks, HttpStatus.OK);
 	}
-	
-	
+
 	@GetMapping("/{id}")
-	public ResponseEntity<Feedback> getFeedbackById(@PathVariable int id) {
+	ResponseEntity<Feedback> getFeedbackById(@PathVariable int id) {
 
-		return ResponseEntity.ok(feedbackService.getFeedbackById(id));
+		Feedback feedback = feedbackService.getFeedbackById(id);
+
+		return new ResponseEntity<>(feedback, HttpStatus.OK);
 	}
 
-	
-	  @GetMapping("/restaurant/{restaurantId}")
-	  public ResponseEntity<List<Feedback>>getRestaurantFeedback(@PathVariable Long restaurantId){
-		  return ResponseEntity.ok(feedbackService.getRestaurantFeedback(restaurantId));
-	  }
-	
-	
-	  
-	  @PutMapping("/{feedbackId}")
-	  public ResponseEntity<Feedback> updateFeedback(@PathVariable int feedbackId, @RequestBody FeedbackDto feedbackDto){
-		  return ResponseEntity.ok(feedbackService.updateFeedback(feedbackId, feedbackDto));
-				  
-	  }
-	  
-	  
-	
-	  @DeleteMapping("/{id}")
-	    public ResponseEntity<String> deleteFeedback(
-	            @PathVariable int id) {
+	@GetMapping("/restaurant/{restaurantId}")
+	ResponseEntity<List<Feedback>> getRestaurantFeedback(@PathVariable Long restaurantId) {
 
-	        feedbackService.deleteFeedback(id);
+		List<Feedback> feedbacks = feedbackService.getRestaurantFeedback(restaurantId);
 
-	        return ResponseEntity.ok(
-	                "Feedback Deleted Successfully"
-	        );
-	    }
+		return new ResponseEntity<>(feedbacks, HttpStatus.OK);
+	}
+
+	@PutMapping("/{id}")
+	ResponseEntity<Feedback> updateFeedback(@PathVariable int id, @RequestBody FeedbackDto feedbackDto)
+
+	{
+
+		Feedback updatedFeedback = feedbackService.updateFeedback(id, feedbackDto);
+
+		return new ResponseEntity<>(updatedFeedback, HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	ResponseEntity<String> deleteFeedback(@PathVariable int id) {
+
+		feedbackService.deleteFeedback(id);
+
+		return new ResponseEntity<>("Feedback Deleted Successfully", HttpStatus.OK);
+
+	}
 }

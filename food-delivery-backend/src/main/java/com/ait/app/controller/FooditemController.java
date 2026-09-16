@@ -19,9 +19,9 @@ import com.ait.app.entity.FoodItem;
 import com.ait.app.service.Fooditemservice;
 
 @RestController
-@RequestMapping("/Food")
+@RequestMapping("/food")
 public class FooditemController {
-	
+		
 	@Autowired
 	Fooditemservice fooditemservice;
 	

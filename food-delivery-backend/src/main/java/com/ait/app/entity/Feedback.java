@@ -1,12 +1,13 @@
 package com.ait.app.entity;
 
-
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -14,22 +15,28 @@ import lombok.Data;
 @Table(name = "feedback")
 @Data
 public class Feedback {
-	  @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private int id;
 
-	    private int userId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
 
-	    private Long restaurantId;
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 
-	    private Integer foodItemId;
+	@ManyToOne
+	@JoinColumn(name = "restaurant_id")
+	private Restaurant restaurant;
 
-	    private int rating;
+	@ManyToOne
+	@JoinColumn(name = "food_item_id")
+	private FoodItem foodItem;
 
-	    private String comment;
+	private int rating;
 
-	    private LocalDateTime createdAt;
+	private String comment;
 
-	    private LocalDateTime updatedAt;
+	private LocalDateTime createdAt;
 
+	private LocalDateTime updatedAt;
 }
