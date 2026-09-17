@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ait.app.dto.CartResponse;
+import com.ait.app.dto.CartResponse2;
+import com.ait.app.dto.CartResponse3;
 import com.ait.app.entity.Cart;
 import com.ait.app.service.CartService;
 
@@ -25,7 +27,7 @@ public class CartController {
 	@Autowired
 	CartService cartService;
 
-	@PostMapping("/add")
+	@PostMapping
 	public ResponseEntity addCart(@RequestBody CartResponse dto) {
 
 		cartService.saveCart(dto);
@@ -41,18 +43,18 @@ public class CartController {
 		return new ResponseEntity("Cart deleted successfully", HttpStatus.OK);
 	}
 
-	@GetMapping("/{id}")
-	public ResponseEntity<Cart> getCart(@PathVariable int id) {
+	@GetMapping("/{userId}")
+	public ResponseEntity<Cart> getCart(@PathVariable int userId) {
 
-		Cart cart = cartService.getCart(id);
+		CartResponse2 cart = cartService.getCart(userId);
 
 		return new ResponseEntity(cart, HttpStatus.OK);
 	}
 
-	@GetMapping("/getAll")
+	@GetMapping
 	public ResponseEntity getAllCart() {
 
-		List list = cartService.getAllCart();
+		List<CartResponse3> list = cartService.getAllCart();
 
 		return new ResponseEntity(list, HttpStatus.OK);
 	}
