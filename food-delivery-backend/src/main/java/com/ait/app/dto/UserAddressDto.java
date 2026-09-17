@@ -29,4 +29,7 @@ public class UserAddressDto {
     private String addressType;
 
     private int userId;
+    
+   
+    
 }

@@ -45,7 +45,7 @@ public class Restaurant {
 	
 
 	@OneToMany(mappedBy = "restaurant")
-	private List<Feedback> feedbackList;
+	private List<Feedback> feedbackList; 
 	
 
 	@JsonIgnore

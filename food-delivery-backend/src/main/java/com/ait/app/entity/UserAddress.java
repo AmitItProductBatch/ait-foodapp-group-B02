@@ -28,6 +28,9 @@ public class UserAddress {
 
     private Long pincode;
 
+    private double latitude;
+    private double longitude;
+    
     private String addressType; 
     @ManyToOne
     @JoinColumn(name = "user_id")

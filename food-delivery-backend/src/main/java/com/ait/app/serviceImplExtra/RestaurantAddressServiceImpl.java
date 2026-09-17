@@ -10,44 +10,94 @@ import com.ait.app.entity.RestaurantAddress;
 import com.ait.app.exception.RestaurantAddressException;
 import com.ait.app.repository.RestaurantAddressRepository;
 import com.ait.app.repository.RestaurantRepository;
+import com.ait.app.service.GeocodingService;
 import com.ait.app.service.RestaurantAddressService;
-
 @Service
-public class RestaurantAddressServiceImpl implements RestaurantAddressService {
-	
-	@Autowired 
-	RestaurantAddressRepository restaurantAddressRepository;
-	
-	@Autowired
-	RestaurantRepository restaurantRepository;
+public class RestaurantAddressServiceImpl
+        implements RestaurantAddressService {
 
-	@Override
-	public RestaurantAddress saveRestaurantAddress(RestaurantAddressRequestDto restaurantAddressRequestDto) {
-		// TODO Auto-generated method stub
-		
-		RestaurantAddress restaurantAddress = new RestaurantAddress();
-		
-		Restaurant restaurant = restaurantRepository.findById(restaurantAddressRequestDto.getRestaurantId()).orElse(null);
-		
-		if(restaurant==null) {
-			throw new RestaurantAddressException("Restaurant not found", HttpStatus.NOT_FOUND);
-		}
-		
-		restaurantAddress.setRestaurant(restaurant);
-		
-		restaurantAddress.setShopNo(restaurantAddressRequestDto.getShopNo());
-		restaurantAddress.setStreet(restaurantAddressRequestDto.getStreet());
-		restaurantAddress.setArea(restaurantAddressRequestDto.getArea());
-		restaurantAddress.setCity(restaurantAddressRequestDto.getCity());
-		restaurantAddress.setState(restaurantAddressRequestDto.getState());
-		restaurantAddress.setPincode(restaurantAddressRequestDto.getPincode());
-		restaurantAddress.setLatitude(restaurantAddressRequestDto.getLatitude());
-		restaurantAddress.setLongitude(restaurantAddressRequestDto.getLongitude());
-		
-		 
-		
-		return restaurantAddressRepository.save(restaurantAddress);
-	}
+    @Autowired
+    RestaurantAddressRepository restaurantAddressRepository;
+
+    @Autowired
+    RestaurantRepository restaurantRepository;
+
+    @Autowired
+    GeocodingService geocodingService;
+
+
+    @Override
+    public RestaurantAddress saveRestaurantAddress(
+            RestaurantAddressRequestDto dto) {
+
+        Restaurant restaurant =
+                restaurantRepository.findById(dto.getRestaurantId())
+                        .orElse(null);
+
+        if (restaurant == null) {
+
+            throw new RestaurantAddressException(
+                    "Restaurant not found",
+                    HttpStatus.NOT_FOUND
+            );
+        }
+
+
+        RestaurantAddress restaurantAddress =
+                new RestaurantAddress();
+
+        restaurantAddress.setRestaurant(restaurant);
+
+        restaurantAddress.setShopNo(
+                dto.getShopNo()
+        );
+
+        restaurantAddress.setStreet(
+                dto.getStreet()
+        );
+
+        restaurantAddress.setArea(
+                dto.getArea()
+        );
+
+        restaurantAddress.setCity(
+                dto.getCity()
+        );
+
+        restaurantAddress.setState(
+                dto.getState()
+        );
+
+        restaurantAddress.setPincode(
+                dto.getPincode()
+        );
+
+
+        // Build address for geocoding
+        String fullAddress =
+                dto.getStreet() + ", "
+                + dto.getArea() + ", "
+                + dto.getCity() + ", "
+                + dto.getState() + ", India, "
+                + dto.getPincode();
+
+
+        // Convert address to latitude and longitude
+        double[] coordinates =
+                geocodingService.getCoordinates(fullAddress);
+
+
+        // Save latitude and longitude
+        restaurantAddress.setLatitude(coordinates[0]);
+        restaurantAddress.setLongitude(coordinates[1]);
+
+
+        // Save restaurant address
+        return restaurantAddressRepository.save(
+                restaurantAddress
+        );
+    }
+
 
 	@Override
 	public RestaurantAddress getRestaurantAddressById(Long id) {

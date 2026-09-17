@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.ait.app.exception.CartItemServiceException;
 import com.ait.app.exception.CartServiceException;
+import com.ait.app.exception.DeliveryFeeException;
 import com.ait.app.exception.FeedbackException;
 import com.ait.app.exception.FooditemException;
 import com.ait.app.exception.PaymentException;
@@ -43,6 +44,12 @@ public class GlobalExceptionHandling {
 		return new ResponseEntity(cartServiceException.getMessage(), cartServiceException.getHttpStatus());
 	}
 
+	@ExceptionHandler(DeliveryFeeException.class)
+	public ResponseEntity<String> handleDeliveryFeeException(DeliveryFeeException deliveryFeeException) {
+
+		return new ResponseEntity<>(deliveryFeeException.getMessage(), deliveryFeeException.getHttpStatus());
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<String> handleException(Exception exception) {
 
@@ -60,4 +67,5 @@ public class GlobalExceptionHandling {
 
 		return new ResponseEntity<>(cartItemServiceException.getMessage(), cartItemServiceException.getHttpStatus());
 	}
+
 }
