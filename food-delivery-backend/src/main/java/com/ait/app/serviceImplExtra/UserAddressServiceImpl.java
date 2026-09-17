@@ -14,6 +14,7 @@ import com.ait.app.entity.UserAddress;
 import com.ait.app.exception.UserAddressException;
 import com.ait.app.repository.UserAddressRepository;
 import com.ait.app.repository.UserRepository;
+import com.ait.app.service.GeocodingService;
 import com.ait.app.service.UserAddressService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
