@@ -9,5 +9,5 @@ import com.ait.app.entity.CartItem;
 public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
 
     List<CartItem> findByCartId(int cartId);
-
+    void deleteByCartId(int cartId);
 }

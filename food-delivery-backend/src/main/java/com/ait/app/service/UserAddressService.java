@@ -19,4 +19,6 @@ public interface UserAddressService {
     List<UserAddressDto1> fetchAllUserAddressesByUserId(int userId); 
     
     UserAddressDto1 getAddressByType(String type,int userId);
+    
+    UserAddressDto1 updateAddress(int addressId, UserAddressDto addressDto);
 }
