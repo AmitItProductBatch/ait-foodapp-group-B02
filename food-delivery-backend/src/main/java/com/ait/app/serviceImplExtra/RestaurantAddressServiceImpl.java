@@ -1,5 +1,7 @@
 package com.ait.app.serviceImplExtra;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,8 +15,7 @@ import com.ait.app.repository.RestaurantRepository;
 import com.ait.app.service.GeocodingService;
 import com.ait.app.service.RestaurantAddressService;
 @Service
-public class RestaurantAddressServiceImpl
-        implements RestaurantAddressService {
+public class RestaurantAddressServiceImpl implements RestaurantAddressService {
 
     @Autowired
     RestaurantAddressRepository restaurantAddressRepository;
@@ -22,104 +23,151 @@ public class RestaurantAddressServiceImpl
     @Autowired
     RestaurantRepository restaurantRepository;
 
-    @Autowired
-    GeocodingService geocodingService;
-
-
+    
     @Override
     public RestaurantAddress saveRestaurantAddress(
-            RestaurantAddressRequestDto dto) {
+            RestaurantAddressRequestDto restaurantAddressRequestDto) {
+
+        RestaurantAddress restaurantAddress = new RestaurantAddress();
 
         Restaurant restaurant =
-                restaurantRepository.findById(dto.getRestaurantId())
-                        .orElse(null);
+                restaurantRepository.findRestaurantById(
+                        restaurantAddressRequestDto.getRestaurantId());
 
         if (restaurant == null) {
-
             throw new RestaurantAddressException(
                     "Restaurant not found",
-                    HttpStatus.NOT_FOUND
-            );
+                    HttpStatus.NOT_FOUND);
         }
-
-
-        RestaurantAddress restaurantAddress =
-                new RestaurantAddress();
 
         restaurantAddress.setRestaurant(restaurant);
 
         restaurantAddress.setShopNo(
-                dto.getShopNo()
-        );
+                restaurantAddressRequestDto.getShopNo());
 
         restaurantAddress.setStreet(
-                dto.getStreet()
-        );
+                restaurantAddressRequestDto.getStreet());
 
         restaurantAddress.setArea(
-                dto.getArea()
-        );
+                restaurantAddressRequestDto.getArea());
 
         restaurantAddress.setCity(
-                dto.getCity()
-        );
+                restaurantAddressRequestDto.getCity());
 
         restaurantAddress.setState(
-                dto.getState()
-        );
+                restaurantAddressRequestDto.getState());
 
         restaurantAddress.setPincode(
-                dto.getPincode()
-        );
+                restaurantAddressRequestDto.getPincode());
 
+        restaurantAddress.setLatitude(
+                restaurantAddressRequestDto.getLatitude());
 
-        // Build address for geocoding
-        String fullAddress =
-                dto.getStreet() + ", "
-                + dto.getArea() + ", "
-                + dto.getCity() + ", "
-                + dto.getState() + ", India, "
-                + dto.getPincode();
+        restaurantAddress.setLongitude(
+                restaurantAddressRequestDto.getLongitude());
 
-
-        // Convert address to latitude and longitude
-        double[] coordinates =
-                geocodingService.getCoordinates(fullAddress);
-
-
-        // Save latitude and longitude
-        restaurantAddress.setLatitude(coordinates[0]);
-        restaurantAddress.setLongitude(coordinates[1]);
-
-
-        // Save restaurant address
-        return restaurantAddressRepository.save(
-                restaurantAddress
-        );
+        return restaurantAddressRepository.save(restaurantAddress);
     }
 
+    
+    @Override
+    public List<RestaurantAddress> getAllRestaurantAddresses() {
 
-	@Override
-	public RestaurantAddress getRestaurantAddressById(Long id) {
-		
-		RestaurantAddress restaurantAddress = restaurantAddressRepository.findById(id).orElse(null);
-		
-		if(restaurantAddress==null) {
-			throw new RestaurantAddressException("Restaurant Address not found", HttpStatus.NOT_FOUND);
-		}
-		
-		return restaurantAddress;
-	}
+        List<RestaurantAddress> restaurantAddresses =
+                restaurantAddressRepository.findAll();
 
-	@Override
-	public void deleteRestaurantAddress(Long id) {
-		
-		if(!restaurantAddressRepository.existsById(id)) {
-			throw new RestaurantAddressException("Restaurant Address not found", HttpStatus.NOT_FOUND);
-		}
-		
-		restaurantAddressRepository.deleteById(id);
-		
-	}
+        if (restaurantAddresses.isEmpty()) {
+            throw new RestaurantAddressException(
+                    "No restaurant addresses found",
+                    HttpStatus.NOT_FOUND);
+        }
 
+        return restaurantAddresses;
+    }
+
+    
+    @Override
+    public RestaurantAddress getRestaurantAddressById(Long id) {
+
+        RestaurantAddress restaurantAddress =
+                restaurantAddressRepository.findRestaurantAddressById(id);
+
+        if (restaurantAddress == null) {
+            throw new RestaurantAddressException(
+                    "Restaurant Address not found",
+                    HttpStatus.NOT_FOUND);
+        }
+
+        return restaurantAddress;
+    }
+
+    
+    @Override
+    public RestaurantAddress updateRestaurantAddress(
+            Long id,
+            RestaurantAddressRequestDto restaurantAddressRequestDto) {
+
+        RestaurantAddress restaurantAddress =
+                restaurantAddressRepository.findRestaurantAddressById(id);
+
+        if (restaurantAddress == null) {
+            throw new RestaurantAddressException(
+                    "Restaurant Address not found",
+                    HttpStatus.NOT_FOUND);
+        }
+
+        Restaurant restaurant =
+                restaurantRepository.findRestaurantById(
+                        restaurantAddressRequestDto.getRestaurantId());
+
+        if (restaurant == null) {
+            throw new RestaurantAddressException(
+                    "Restaurant not found",
+                    HttpStatus.NOT_FOUND);
+        }
+
+        restaurantAddress.setRestaurant(restaurant);
+
+        restaurantAddress.setShopNo(
+                restaurantAddressRequestDto.getShopNo());
+
+        restaurantAddress.setStreet(
+                restaurantAddressRequestDto.getStreet());
+
+        restaurantAddress.setArea(
+                restaurantAddressRequestDto.getArea());
+
+        restaurantAddress.setCity(
+                restaurantAddressRequestDto.getCity());
+
+        restaurantAddress.setState(
+                restaurantAddressRequestDto.getState());
+
+        restaurantAddress.setPincode(
+                restaurantAddressRequestDto.getPincode());
+
+        restaurantAddress.setLatitude(
+                restaurantAddressRequestDto.getLatitude());
+
+        restaurantAddress.setLongitude(
+                restaurantAddressRequestDto.getLongitude());
+
+        return restaurantAddressRepository.save(restaurantAddress);
+    }
+
+   
+    @Override
+    public void deleteRestaurantAddress(Long id) {
+
+        RestaurantAddress restaurantAddress =
+                restaurantAddressRepository.findRestaurantAddressById(id);
+
+        if (restaurantAddress == null) {
+            throw new RestaurantAddressException(
+                    "Restaurant Address not found",
+                    HttpStatus.NOT_FOUND);
+        }
+
+        restaurantAddressRepository.delete(restaurantAddress);
+    }
 }

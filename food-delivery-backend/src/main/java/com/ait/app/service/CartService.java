@@ -4,6 +4,8 @@ package com.ait.app.service;
 import java.util.List;
 
 import com.ait.app.dto.CartResponse;
+import com.ait.app.dto.CartResponse2;
+import com.ait.app.dto.CartResponse3;
 import com.ait.app.entity.Cart;
 
 public interface CartService {
@@ -12,10 +14,10 @@ public interface CartService {
 
 	public void deleteCart(int id);
 
-	Cart getCart(int id);
+	CartResponse2 getCart(int id);
 
 	Cart updateCart(int id, Cart cart);
 
-	List<Cart> getAllCart();
+	List<CartResponse3> getAllCart();
 
 }

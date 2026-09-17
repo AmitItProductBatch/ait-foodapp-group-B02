@@ -20,52 +20,62 @@ import com.ait.app.entity.Payment;
 import com.ait.app.service.PaymentService;
 
 @RestController
-@RequestMapping("/payment")
+@RequestMapping("/api/payments")
 public class PaymentController {
-	
-	@Autowired
+
+    @Autowired
     PaymentService paymentService;
 
+    
     @PostMapping
-    ResponseEntity<Payment> addPayment(@RequestBody PaymentRequestDto dto) {
+    public ResponseEntity<Payment> addPayment(
+            @RequestBody PaymentRequestDto dto) {
 
         Payment payment = paymentService.addPayment(dto);
 
         return new ResponseEntity<>(payment, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    ResponseEntity<Payment> getPayment(@PathVariable Long id) {
-
-        Payment payment = paymentService.getPayment(id);
-
-        return new ResponseEntity<>(payment, HttpStatus.OK);
-    }
-
-    @GetMapping("/all")
-    ResponseEntity<List<Payment>> getAllPayments() {
+    
+    @GetMapping
+    public ResponseEntity<List<Payment>> getAllPayments() {
 
         List<Payment> payments = paymentService.getAllPayments();
 
         return new ResponseEntity<>(payments, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    ResponseEntity<String> deletePayment(@PathVariable Long id) {
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<Payment> getPayment(
+            @PathVariable Long id) {
 
-        paymentService.deletePayment(id);
-
-        return new ResponseEntity<>("Payment deleted", HttpStatus.OK);
-    }
-
-    @PutMapping("/{id}")
-    ResponseEntity<Payment> updatePaymentStatus(
-            @PathVariable Long id,
-            @RequestParam  String status) {
-
-        Payment payment = paymentService.updatePaymentStatus(id, status);
+        Payment payment = paymentService.getPayment(id);
 
         return new ResponseEntity<>(payment, HttpStatus.OK);
     }
 
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletePayment(
+            @PathVariable Long id) {
+
+        paymentService.deletePayment(id);
+
+        return new ResponseEntity<>(
+                "Payment deleted successfully",
+                HttpStatus.OK);
+    }
+
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<Payment> updatePaymentStatus(
+            @PathVariable Long id,
+            @RequestParam String status) {
+
+        Payment payment =
+                paymentService.updatePaymentStatus(id, status);
+
+        return new ResponseEntity<>(payment, HttpStatus.OK);
+    }
 }

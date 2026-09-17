@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 
 public class UserAddressDto1 {
  
+	private int addressId;
+	
     private String houseNo;
 
     private String buildingName;
@@ -28,4 +30,6 @@ public class UserAddressDto1 {
 
     private String addressType;
 
+    private double latitude;
+    private double longitude;
 }

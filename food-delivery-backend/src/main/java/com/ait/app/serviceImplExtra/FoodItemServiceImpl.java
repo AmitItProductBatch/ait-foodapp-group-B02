@@ -47,7 +47,7 @@ public class FoodItemServiceImpl implements Fooditemservice{
                     HttpStatus.BAD_REQUEST);
 		}
 		
-		if(dto.getDescription()==null || dto.getFoodtype().trim().isEmpty()) {
+		if(dto.getDescription()==null || dto.getDescription().trim().isEmpty()) {
 			throw new FooditemException("Description can not be empty", HttpStatus.BAD_REQUEST);
 		}
 		
@@ -133,7 +133,7 @@ public class FoodItemServiceImpl implements Fooditemservice{
             throw new FooditemException(  "Food name cannot be empty", HttpStatus.BAD_REQUEST);
         }
  
-        if (dto.getFoodtype() == null ||dto.getFoodtype().trim().isEmpty()) {
+        if (dto.getFoodtype() == null ||dto.getFoodtype().isEmpty()) {
             throw new FooditemException( "Food type cannot be empty", HttpStatus.BAD_REQUEST);
         }
         if (!dto.getFoodtype().equalsIgnoreCase("VEG") && !dto.getFoodtype().equalsIgnoreCase("NON_VEG")) {
@@ -141,11 +141,11 @@ public class FoodItemServiceImpl implements Fooditemservice{
             throw new FooditemException( "Food type must be VEG or NON_VEG", HttpStatus.BAD_REQUEST);
         }
      
-        if(dto.getDescription()==null || dto.getDescription().trim().isEmpty()) {
+        if(dto.getDescription()==null || dto.getDescription().isEmpty()) {
         	throw new FooditemException("Description can not be empty", HttpStatus.BAD_REQUEST);
         }
      
-        if(dto.getCuisine()==null || dto.getCuisine().trim().isEmpty()) {
+        if(dto.getCuisine()==null || dto.getCuisine().isEmpty()) {
         	throw new FooditemException("cuisine can not be empty", HttpStatus.BAD_REQUEST);
         }
      

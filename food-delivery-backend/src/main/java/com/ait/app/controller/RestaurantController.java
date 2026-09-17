@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ait.app.dto.RestaurantRequestBody;
@@ -26,15 +28,23 @@ public class RestaurantController {
 
     @PostMapping
     public ResponseEntity<Restaurant> saveRestaurant(
-            @RequestBody RestaurantRequestBody restaurantRequestBody) {
+            @RequestBody RestaurantRequestBody dto) {
 
-        Restaurant restaurant =
-                restaurantService.saveRestaurant(restaurantRequestBody);
+        Restaurant restaurant = restaurantService.saveRestaurant(dto);
 
         return new ResponseEntity<>(restaurant, HttpStatus.CREATED);
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping
+    public ResponseEntity<List<Restaurant>> getAllRestaurants() {
+
+        List<Restaurant> restaurants =
+                restaurantService.getAllRestaurants();
+
+        return new ResponseEntity<>(restaurants, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
     public ResponseEntity<Restaurant> getRestaurantById(
             @PathVariable Long id) {
 
@@ -44,24 +54,35 @@ public class RestaurantController {
         return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteRestaurantById(
-            @PathVariable Long id) {
-
-        restaurantService.deleteRestaurant(id);
-
-        return new ResponseEntity<>(
-                "Restaurant is deleted successfully",
-                HttpStatus.OK);
-    }
-
-    @GetMapping("/city/{city}")
-    public ResponseEntity<List<Restaurant>> getRestaurantByCity(
-            @PathVariable String city) {
+    @GetMapping("/search")
+    public ResponseEntity<List<Restaurant>> searchRestaurants(
+            @RequestParam String city) {
 
         List<Restaurant> restaurants =
                 restaurantService.getRestaurantByCity(city);
 
         return new ResponseEntity<>(restaurants, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteRestaurant(
+            @PathVariable Long id) {
+
+        restaurantService.deleteRestaurant(id);
+
+        return new ResponseEntity<>(
+                "Restaurant deleted successfully",
+                HttpStatus.OK);
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<Restaurant> updateRestaurant(
+            @PathVariable Long id,
+            @RequestBody RestaurantRequestBody dto) {
+
+        Restaurant restaurant =
+                restaurantService.updateRestaurant(id, dto);
+
+        return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }
 }
