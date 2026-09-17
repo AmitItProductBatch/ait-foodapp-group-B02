@@ -18,13 +18,12 @@ public class OrderController {
 	@Autowired
 	OrderService orderService;
 
-	// CREATE ORDER
 	@PostMapping
-	public ResponseEntity<String> createOrder(@RequestBody OrderRequestDto dto) {
+	public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto dto) {
 
-		orderService.createOrder(dto);
+		OrderResponseDto order = orderService.createOrder(dto);
 
-		return new ResponseEntity<>("Order successfully created", HttpStatus.CREATED);
+		return new ResponseEntity<>(order, HttpStatus.CREATED);
 	}
 
 	@GetMapping
@@ -34,7 +33,6 @@ public class OrderController {
 
 		return new ResponseEntity<>(orders, HttpStatus.OK);
 	}
-
 
 	@GetMapping("/{id}")
 	public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable int id) {
