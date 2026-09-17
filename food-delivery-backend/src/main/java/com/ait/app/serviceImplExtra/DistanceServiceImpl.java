@@ -15,7 +15,7 @@ public class DistanceServiceImpl implements DistanceService {
 
     private final RestClient restClient;
 
-    @Value("${ors.api.key}")
+    @Value("${ors.api.key:default_key}")
     private String apiKey;
 
     public DistanceServiceImpl(RestClient.Builder builder) {

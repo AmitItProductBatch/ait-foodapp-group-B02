@@ -11,6 +11,8 @@ public class RestaurantAddressRequestDto {
 	private String city;
 	private String state;
 	private String pincode;
+	private double latitude;
+	private double longitude;
 
 	private Long restaurantId;
 
