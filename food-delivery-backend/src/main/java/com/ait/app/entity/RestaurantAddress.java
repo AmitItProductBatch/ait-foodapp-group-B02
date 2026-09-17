@@ -47,7 +47,7 @@ public class RestaurantAddress {
 	
 	@OneToOne
 	@JsonIgnore
-	@JoinColumn(name = "restaurant_id")
+	@JoinColumn(name = "restaurant_id", nullable = false)
 	private Restaurant restaurant;
 
 	

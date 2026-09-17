@@ -1,15 +1,20 @@
 package com.ait.app.serviceImplExtra;
 
 import java.time.LocalDateTime;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import com.ait.app.entity.Order;
+import com.ait.app.repository.OrderRepository;
 
 import com.ait.app.dto.PaymentRequestDto;
+import com.ait.app.entity.Order;
 import com.ait.app.entity.Payment;
 import com.ait.app.exception.PaymentException;
+import com.ait.app.repository.OrderRepository;
 import com.ait.app.repository.PaymentRepository;
 import com.ait.app.service.PaymentService;
 
@@ -20,22 +25,34 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Autowired
 	PaymentRepository paymentRepository;
+	
+	@Autowired
+	OrderRepository orderRepository;
 
 	@Override
 	public Payment addPayment(PaymentRequestDto dto) {
 
-		Payment payment = new Payment();
+	    Payment payment = new Payment();
 
-		payment.setTransactionId(dto.getTransactionId());
-		payment.setOrderId(dto.getOrderId());
-		payment.setUserId(dto.getUserId());
-		payment.setAmount(dto.getAmount());
-		payment.setPaymentMethod(dto.getPaymentMethod());
-		payment.setPaymentStatus(dto.getPaymentStatus());
+	    payment.setTransactionId(dto.getTransactionId());
 
-		payment.setPaymentDate(LocalDateTime.now());
+	    Order order = orderRepository.findById(dto.getOrderId()).orElse(null);
+	    
 
-		return paymentRepository.save(payment);
+	    if (order == null) {
+	        throw new PaymentException(
+	                "Order not found",
+	                HttpStatus.NOT_FOUND);
+	    }
+
+	    payment.setOrder(order);
+
+	    payment.setAmount(dto.getAmount());
+	    payment.setPaymentMethod(dto.getPaymentMethod());
+	    payment.setPaymentStatus(dto.getPaymentStatus());
+	    payment.setPaymentDate(LocalDateTime.now());
+
+	    return paymentRepository.save(payment);
 	}
 
 	@Override

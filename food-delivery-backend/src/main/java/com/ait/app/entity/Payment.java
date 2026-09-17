@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -22,11 +24,9 @@ public class Payment {
 	    @Column(nullable = false, unique = true)
 	    private String transactionId;
 
-	    @Column(nullable = false)
-	    private Long orderId;
-
-	    @Column(nullable = false)
-	    private Long userId;
+	    @OneToOne
+	    @JoinColumn(name = "order_id", nullable = false, unique = true)
+	    private Order order;
 
 	    @Column(nullable = false)
 	    private double amount;

@@ -7,9 +7,7 @@ public class PaymentRequestDto {
 
 	private String transactionId;
 
-    private Long orderId;
-
-    private Long userId;
+    private Integer orderId;
 
     private double amount;
 
