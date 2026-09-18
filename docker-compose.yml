@@ -1,7 +1,6 @@
+version: '3.8'
+
 services:
-  # ============================================================================
-  # PostgreSQL Database Service
-  # ============================================================================
   postgres-db:
     image: postgres:16-alpine
     container_name: fooddelivery-postgres02
@@ -23,9 +22,6 @@ services:
     networks:
       - fooddelivery-network
 
-  # ============================================================================
-  # Spring Boot Backend API Service
-  # ============================================================================
   backend:
     build:
       context: ./food-delivery-backend
@@ -34,6 +30,11 @@ services:
     restart: unless-stopped
     ports:
       - "${BACKEND_PORT:-8082}:8082"
+    labels:
+      metrics.scrape: "true"
+      metrics.path: "/actuator/prometheus"
+      metrics.port: "8082"
+      app.name: "fooddelivery-backend02"
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SERVER_PORT: 8082
@@ -41,17 +42,16 @@ services:
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      LOKI_URL: ${LOKI_URL:-http://194.242.57.93:3100/loki/api/v1/push}
-      MAIL_HOST: ${MAIL_HOST:-194.242.57.93}
+      LOKI_URL: ${LOKI_URL:-http://loki:3100/loki/api/v1/push}
+      MAIL_HOST: ${MAIL_HOST:-mailpit}
+      MAIL_PORT: 1025
     depends_on:
       postgres-db:
         condition: service_healthy
     networks:
       - fooddelivery-network
+      - monitoring
 
-  # ============================================================================
-  # React / Vite Frontend Service
-  # ============================================================================
   frontend:
     build:
       context: ./food-delivery-frontend
@@ -67,17 +67,13 @@ services:
     networks:
       - fooddelivery-network
 
-# ==============================================================================
-# Persistent Volumes
-# ==============================================================================
 volumes:
   postgres_data:
     name: fooddelivery_postgres_data02
 
-# ==============================================================================
-# Networks
-# ==============================================================================
 networks:
   fooddelivery-network:
     name: fooddelivery-network02
     driver: bridge
+  monitoring:
+    external: true
