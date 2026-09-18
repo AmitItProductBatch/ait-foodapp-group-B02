@@ -153,9 +153,15 @@ public class CartItemServiceImpl implements CartItemService {
 
 		CartItemDto2 dto = new CartItemDto2();
 
-		dto.setFoodItemId(cartItem.getFoodItem().getFoodid());
-		
-		dto.setFoodname(cartItem.getFoodItem().getFoodname());
+		dto.setCartItemId(cartItem.getId());
+		if (cartItem.getCart() != null) {
+			dto.setCartId(cartItem.getCart().getId());
+		}
+
+		if (cartItem.getFoodItem() != null) {
+			dto.setFoodItemId(cartItem.getFoodItem().getFoodid());
+			dto.setFoodname(cartItem.getFoodItem().getFoodname());
+		}
 
 		dto.setQuantity(cartItem.getQuantity());
 

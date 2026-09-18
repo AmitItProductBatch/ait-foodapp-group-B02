@@ -132,33 +132,30 @@ public class CartServiceImpl implements CartService {
 		Cart cart = o.get();
 
 		CartResponse2 dto = new CartResponse2();
-
-		List<CartItemDto2> items = new ArrayList();
-
-		if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
-
-			log.warn("No cart items found for cart id: {}", cart.getId());
-			throw new CartServiceException("No cart items found for this cart", HttpStatus.NOT_FOUND);
+		dto.setCartId(cart.getId());
+		if (cart.getRestaurant() != null) {
+			dto.setRestaurantId(cart.getRestaurant().getId());
+			dto.setRestaurantName(cart.getRestaurant().getName());
 		}
 
-		for (CartItem item : cart.getCartItems()) {
+		List<CartItemDto2> items = new ArrayList<>();
 
-			if (item.getFoodItem() == null) {
-
-				log.warn("Food item not found for cart item id: {}", item.getId());
-				throw new CartServiceException("Food item not found for this cart item", HttpStatus.NOT_FOUND);
+		if (cart.getCartItems() != null && !cart.getCartItems().isEmpty()) {
+			for (CartItem item : cart.getCartItems()) {
+				if (item.getFoodItem() != null) {
+					CartItemDto2 cartItemDto2 = new CartItemDto2();
+					cartItemDto2.setCartItemId(item.getId());
+					cartItemDto2.setCartId(cart.getId());
+					cartItemDto2.setFoodItemId(item.getFoodItem().getFoodid());
+					cartItemDto2.setFoodname(item.getFoodItem().getFoodname());
+					cartItemDto2.setQuantity(item.getQuantity());
+					cartItemDto2.setUnitPrice(item.getUnitPrice());
+					cartItemDto2.setSubtotal(item.getSubtotal());
+					items.add(cartItemDto2);
+				}
 			}
-			
-			CartItemDto2 cartItemDto2 = new CartItemDto2();
-			cartItemDto2.setFoodItemId(item.getFoodItem().getFoodid());
-			cartItemDto2.setFoodname(item.getFoodItem().getFoodname());
-			cartItemDto2.setQuantity(item.getQuantity());
-			cartItemDto2.setUnitPrice(item.getUnitPrice());
-			cartItemDto2.setSubtotal(item.getSubtotal());
-			items.add(cartItemDto2);
 		}
 
-		dto.setRestaurantName(cart.getRestaurant().getName());
 		dto.setItems(items);
 		dto.setTotalAmount(cart.getTotalAmount());
 
@@ -180,58 +177,39 @@ public class CartServiceImpl implements CartService {
 
 		List<Cart> list = cartRepository.findAll();
 
-		if (list.isEmpty()) {
-
-			log.warn("No carts found");
-			throw new CartServiceException("Carts is emptyy", HttpStatus.NOT_FOUND);
-		}
-
-		List<CartResponse3> l2 = new ArrayList();
+		List<CartResponse3> l2 = new ArrayList<>();
 
 		for (Cart cart : list) {
 
 			CartResponse3 dto = new CartResponse3();
+			dto.setCartId(cart.getId());
 
-			if (cart.getRestaurant() == null) {
-
-				log.warn("Restaurant not found for cart id: {}", cart.getId());
-				throw new CartServiceException("Restaurant not found for this cart", HttpStatus.NOT_FOUND);
+			if (cart.getRestaurant() != null) {
+				dto.setRestaurantName(cart.getRestaurant().getName());
 			}
 
-			if (cart.getUser() == null) {
-
-				log.warn("User not found for cart id: {}", cart.getId());
-				throw new CartServiceException("User not found for this cart", HttpStatus.NOT_FOUND);
+			if (cart.getUser() != null) {
+				dto.setUserId(cart.getUser().getId());
+				dto.setUserName(cart.getUser().getName());
+				dto.setUserMobile(cart.getUser().getMobile());
 			}
-
-			dto.setRestaurantName(cart.getRestaurant().getName());
-			dto.setUserName(cart.getUser().getName());
-			dto.setUserMobile(cart.getUser().getMobile());
 
 			List<CartItemDto2> items = new ArrayList<>();
 
-			if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
-
-				log.warn("No cart items found for cart id: {}", cart.getId());
-				throw new CartServiceException("No cart items found for this cart", HttpStatus.NOT_FOUND);
-			}
-
-			for (CartItem item : cart.getCartItems()) {
-
-				if (item.getFoodItem() == null) {
-
-					log.warn("Food item not found for cart item id: {}", item.getId());
-					throw new CartServiceException("Food item not found for this cart item", HttpStatus.NOT_FOUND);
+			if (cart.getCartItems() != null) {
+				for (CartItem item : cart.getCartItems()) {
+					if (item.getFoodItem() != null) {
+						CartItemDto2 itemDto = new CartItemDto2();
+						itemDto.setCartItemId(item.getId());
+						itemDto.setCartId(cart.getId());
+						itemDto.setFoodItemId(item.getFoodItem().getFoodid());
+						itemDto.setFoodname(item.getFoodItem().getFoodname());
+						itemDto.setQuantity(item.getQuantity());
+						itemDto.setUnitPrice(item.getUnitPrice());
+						itemDto.setSubtotal(item.getSubtotal());
+						items.add(itemDto);
+					}
 				}
-
-				CartItemDto2 itemDto = new CartItemDto2();
-
-				itemDto.setFoodItemId(item.getFoodItem().getFoodid());
-				itemDto.setFoodname(item.getFoodItem().getFoodname());
-				itemDto.setQuantity(item.getQuantity());
-				itemDto.setUnitPrice(item.getUnitPrice());
-				itemDto.setSubtotal(item.getSubtotal());
-				items.add(itemDto);
 			}
 
 			dto.setItems(items);

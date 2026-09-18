@@ -11,19 +11,26 @@ import com.ait.app.dto.DelieveryPricingRuleDto;
 import com.ait.app.service.DelieveryPricingRule;
 
 
+import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 @RestController
 @RequestMapping("/delieverypricing")
 public class DelieveryPricingRuleController {
 	
-	
 	@Autowired
 	DelieveryPricingRule delieveryPricingRule;
 	
-	
 	@PostMapping("/add")
-	ResponseEntity<DelieveryPricingRuleDto> addDeliveryPricingRule(DelieveryPricingRuleDto delieveryPricingRuleDto) {
+	public ResponseEntity<String> addDeliveryPricingRule(@RequestBody DelieveryPricingRuleDto delieveryPricingRuleDto) {
 		delieveryPricingRule.addDeliveryPricingRule(delieveryPricingRuleDto);
-		return new ResponseEntity("delievery Pricing Rule added",HttpStatus.CREATED);
+		return new ResponseEntity<>("delievery Pricing Rule added", HttpStatus.CREATED);
 	}
 
+	@GetMapping
+	public ResponseEntity<List<DelieveryPricingRuleDto>> getAllDeliveryPricingRules() {
+		List<DelieveryPricingRuleDto> rules = delieveryPricingRule.getAllDeliveryPricingRule();
+		return new ResponseEntity<>(rules, HttpStatus.OK);
+	}
 }

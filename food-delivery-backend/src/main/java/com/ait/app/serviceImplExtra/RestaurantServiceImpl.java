@@ -30,6 +30,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setEmail(restaurantRequestBody.getEmail());
         restaurant.setPhone(restaurantRequestBody.getPhone());
         restaurant.setDescription(restaurantRequestBody.getDescription());
+        restaurant.setOpen(restaurantRequestBody.isOpen());
 
         return restaurantRepository.save(restaurant);
     }
@@ -38,15 +39,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public List<Restaurant> getAllRestaurants() {
 
-        List<Restaurant> restaurants = restaurantRepository.findAll();
-
-        if (restaurants.isEmpty()) {
-            throw new RestaurantException(
-                    "No restaurants found",
-                    HttpStatus.NOT_FOUND);
-        }
-
-        return restaurants;
+        return restaurantRepository.findAll();
     }
 
     
@@ -112,6 +105,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setEmail(restaurantRequestBody.getEmail());
         restaurant.setPhone(restaurantRequestBody.getPhone());
         restaurant.setDescription(restaurantRequestBody.getDescription());
+        restaurant.setOpen(restaurantRequestBody.isOpen());
 
         return restaurantRepository.save(restaurant);
     }

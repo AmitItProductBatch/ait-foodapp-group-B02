@@ -7,13 +7,11 @@ import lombok.Data;
 @Data
 public class CartResponse3 {
 
-	 private String restaurantName;
-
+	    private int cartId;
+	    private int userId;
+	    private String restaurantName;
 	    private String userName;
-
 	    private String userMobile;
-
 	    private List<CartItemDto2> items;
-
 	    private double totalAmount;
 }

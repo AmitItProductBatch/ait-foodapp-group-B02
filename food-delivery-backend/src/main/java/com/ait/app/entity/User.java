@@ -39,8 +39,8 @@ public class User {
 	private List<UserAddress> addresses;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
 	private List<Feedback> feedbackList;
 
-	
-	}
+}
 	

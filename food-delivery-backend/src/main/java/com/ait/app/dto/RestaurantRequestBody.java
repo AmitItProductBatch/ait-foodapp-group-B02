@@ -13,4 +13,6 @@ public class RestaurantRequestBody {
 
 	private String description;
 
+	private boolean open = true;
+
 }
