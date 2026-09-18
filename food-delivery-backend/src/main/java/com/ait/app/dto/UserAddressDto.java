@@ -30,8 +30,4 @@ public class UserAddressDto {
 
 	private Double longitude;
 
-    private int userId;
-    
-   
-    
 }

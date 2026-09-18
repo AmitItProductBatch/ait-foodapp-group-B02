@@ -16,13 +16,10 @@ public class DelieveryPricingRuleException extends RuntimeException{
 	
 	@Override
 	public String getMessage() {
-		// TODO Auto-generated method stub
-		return getMessage();
+		return message;
 	}
 	
-	public HttpStatus getHttpsstatus() {
+	public HttpStatus getHttpStatus() {
 		return httpStatus;
-		
 	}
-
 }
