@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 @Service
 public class UserAddressServiceImpl implements UserAddressService {
 
-	@Autowired
 	private static final Logger log = LoggerFactory.getLogger(UserAddressServiceImpl.class);
 
 	@Autowired
@@ -100,16 +99,13 @@ public class UserAddressServiceImpl implements UserAddressService {
 
 		List<UserAddress> addressList = user.get().getAddresses();
 
-		if (addressList.isEmpty()) {
-			log.error("No addresses found for user id: {}", userId);
-			throw new UserAddressException("No addresses found for user id: " + userId, HttpStatus.NOT_FOUND);
-		}
-
 		List<UserAddressDto1> dtoList = new java.util.ArrayList<>();
-		for (UserAddress u : addressList) {
-			dtoList.add(new UserAddressDto1(u.getId(), u.getHouseNo(), u.getBuildingName(), u.getStreet(),
-					u.getLandmark(), u.getArea(), u.getCity(), u.getState(), u.getPincode(), u.getAddressType(),
-					u.getLatitude(), u.getLongitude()));
+		if (addressList != null) {
+			for (UserAddress u : addressList) {
+				dtoList.add(new UserAddressDto1(u.getId(), u.getHouseNo(), u.getBuildingName(), u.getStreet(),
+						u.getLandmark(), u.getArea(), u.getCity(), u.getState(), u.getPincode(), u.getAddressType(),
+						u.getLatitude(), u.getLongitude()));
+			}
 		}
 
 		return dtoList;

@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import com.ait.app.dto.OrderItemResponseDto;
 import com.ait.app.dto.OrderRequestDto;
@@ -51,6 +52,7 @@ public class OrderServiceImpl implements OrderService {
 	CartItemRepository cartItemRepository;
 
 	@Override
+	@Transactional
 	public OrderResponseDto createOrder(OrderRequestDto dto) {
 
 		if (dto.getUserId() <= 0) {
@@ -169,6 +171,8 @@ public class OrderServiceImpl implements OrderService {
 		Order savedOrder = orderRepository.save(order);
 
 		cartItemRepository.deleteByCartId(cart.getId());
+		cart.setTotalAmount(0.0);
+		cartRepository.save(cart);
 
 		OrderResponseDto response = convertToResponseDto(savedOrder);
 

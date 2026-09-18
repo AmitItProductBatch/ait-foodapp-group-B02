@@ -159,7 +159,7 @@ public class FoodItemServiceImpl implements Fooditemservice{
      
         Restaurant rest = repository.findById((long)dto.getRestaurantId()).orElse(null);
         if(rest==null) {
-        	throw new FooditemException("Restaurant not found with id:+id", HttpStatus.NOT_FOUND);
+        	throw new FooditemException("Restaurant not found with id: " + dto.getRestaurantId(), HttpStatus.NOT_FOUND);
         }
         
         Optional<FoodItem> existingfood=fooditemRepo.findByFoodnameIgnoreCaseAndRestaurantId(dto.getFoodname(), dto.getRestaurantId());
@@ -175,10 +175,10 @@ public class FoodItemServiceImpl implements Fooditemservice{
 		item.setAvailable(dto.isAvailable());
 		item.setRestaurant(rest);
 		
-	
 		FoodItem updateditem= fooditemRepo.save(item);
 
 		FoodItemDto response= new FoodItemDto();
+		response.setFoodid(updateditem.getFoodid());
 		response.setFoodname(updateditem.getFoodname());
 		response.setFoodtype(updateditem.getFoodtype());
 		response.setDescription(updateditem.getDescription());
@@ -195,6 +195,7 @@ public class FoodItemServiceImpl implements Fooditemservice{
 	List<FoodItemDto> response= new ArrayList<>();
 	for(FoodItem item :fooditems) {
 		FoodItemDto dto= new FoodItemDto();
+		dto.setFoodid(item.getFoodid());
 		dto.setFoodname(item.getFoodname());
 		dto.setFoodtype(item.getFoodtype());
 		dto.setDescription(item.getDescription());

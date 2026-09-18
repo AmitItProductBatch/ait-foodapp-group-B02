@@ -20,69 +20,88 @@ public class DelieveryPricingRuleServiceImpl implements DelieveryPricingRule{
 
 	@Override
 	public DelieveryPricingRuleDto addDeliveryPricingRule(DelieveryPricingRuleDto delieveryPricingRuleDto) {
-		// TODO Auto-generated method stub
 		if(delieveryPricingRuleDto==null) {
-			 throw new DelieveryPricingRuleException("delievery pricing rule must be greater than zero", HttpStatus.BAD_REQUEST);
+			 throw new DelieveryPricingRuleException("delivery pricing rule must be provided", HttpStatus.BAD_REQUEST);
 		}
 		if(delieveryPricingRuleDto.getBasefees()<=0) {
-			throw new DelieveryPricingRuleException("delievery base fees must be greater than zero", HttpStatus.BAD_REQUEST);
+			throw new DelieveryPricingRuleException("delivery base fees must be greater than zero", HttpStatus.BAD_REQUEST);
 		}
 		if(delieveryPricingRuleDto.getPerKmRate()<0) {
-			throw new DelieveryPricingRuleException("delievery per km rate must be greater than zero", HttpStatus.BAD_REQUEST);
+			throw new DelieveryPricingRuleException("delivery per km rate must be 0 or greater", HttpStatus.BAD_REQUEST);
 		}
-		if(delieveryPricingRuleDto.getMaxdelieveryradius()<0|| delieveryPricingRuleDto.getMaxdelieveryradius()!=10){
-			throw new DelieveryPricingRuleException("delievery raduis must be greater than zero", HttpStatus.BAD_REQUEST);
+		if(delieveryPricingRuleDto.getMaxdelieveryradius()<=0){
+			throw new DelieveryPricingRuleException("delivery radius must be greater than zero", HttpStatus.BAD_REQUEST);
 		}
 		if(delieveryPricingRuleDto.getFreeDelievery()<=0) {
-			throw new DelieveryPricingRuleException("free delievery can not be zero", HttpStatus.BAD_REQUEST);
+			throw new DelieveryPricingRuleException("free delivery threshold must be greater than zero", HttpStatus.BAD_REQUEST);
 		}
 		
-		Optional<DeliveryPricingRule> existingdelieverypricingrule =delieveryPricingRuleRepository.findByActiveTrue();
+		Optional<DeliveryPricingRule> existingdelieverypricingrule = delieveryPricingRuleRepository.findByActiveTrue();
+		DeliveryPricingRule pricingRules;
 		
-			if(existingdelieverypricingrule.isPresent()) {
-				throw new DelieveryPricingRuleException("DeliveryPricingRule already exists", HttpStatus.BAD_REQUEST);
-			}
-				DeliveryPricingRule Pricingrules= new DeliveryPricingRule();
-				Pricingrules.setBasefees(delieveryPricingRuleDto.getBasefees());
-				Pricingrules.setPerKmRate(delieveryPricingRuleDto.getPerKmRate());
-				Pricingrules.setMaxdelieveryradius(delieveryPricingRuleDto.getMaxdelieveryradius());
-				Pricingrules.setFreeDelievery(delieveryPricingRuleDto.getFreeDelievery());
-				Pricingrules.setActive(delieveryPricingRuleDto.isActive());
-				Pricingrules.setActive(true);
-				
-				DeliveryPricingRule saverule=delieveryPricingRuleRepository.save(Pricingrules);
-				
-				DelieveryPricingRuleDto responseDto=new DelieveryPricingRuleDto();
-				responseDto.setBasefees(saverule.getBasefees());
-				responseDto.setFreeDelievery(saverule.getFreeDelievery());
-				responseDto.setMaxdelieveryradius(saverule.getMaxdelieveryradius());
-				responseDto.setPerKmRate(saverule.getPerKmRate());
-				responseDto.setActive(saverule.isActive());
-				return responseDto;
+		if(existingdelieverypricingrule.isPresent()) {
+			pricingRules = existingdelieverypricingrule.get();
+		} else {
+			pricingRules = new DeliveryPricingRule();
+		}
+		
+		pricingRules.setBasefees(delieveryPricingRuleDto.getBasefees());
+		pricingRules.setPerKmRate(delieveryPricingRuleDto.getPerKmRate());
+		pricingRules.setMaxdelieveryradius(delieveryPricingRuleDto.getMaxdelieveryradius());
+		pricingRules.setFreeDelievery(delieveryPricingRuleDto.getFreeDelievery());
+		pricingRules.setActive(true);
+		
+		DeliveryPricingRule saverule = delieveryPricingRuleRepository.save(pricingRules);
+		
+		DelieveryPricingRuleDto responseDto = new DelieveryPricingRuleDto();
+		responseDto.setBasefees(saverule.getBasefees());
+		responseDto.setFreeDelievery(saverule.getFreeDelievery());
+		responseDto.setMaxdelieveryradius(saverule.getMaxdelieveryradius());
+		responseDto.setPerKmRate(saverule.getPerKmRate());
+		responseDto.setActive(saverule.isActive());
+		return responseDto;
 	}
 
 	@Override
 	public DelieveryPricingRuleDto getDeliveryPricingRule(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<DeliveryPricingRule> rule = delieveryPricingRuleRepository.findById(id);
+		if(rule.isEmpty()) {
+			throw new DelieveryPricingRuleException("DeliveryPricingRule not found", HttpStatus.NOT_FOUND);
+		}
+		DeliveryPricingRule saverule = rule.get();
+		DelieveryPricingRuleDto responseDto = new DelieveryPricingRuleDto();
+		responseDto.setBasefees(saverule.getBasefees());
+		responseDto.setFreeDelievery(saverule.getFreeDelievery());
+		responseDto.setMaxdelieveryradius(saverule.getMaxdelieveryradius());
+		responseDto.setPerKmRate(saverule.getPerKmRate());
+		responseDto.setActive(saverule.isActive());
+		return responseDto;
 	}
 
 	@Override
 	public List<DelieveryPricingRuleDto> getAllDeliveryPricingRule() {
-		// TODO Auto-generated method stub
-		return null;
+		List<DeliveryPricingRule> list = delieveryPricingRuleRepository.findAll();
+		java.util.List<DelieveryPricingRuleDto> result = new java.util.ArrayList<>();
+		for(DeliveryPricingRule saverule : list) {
+			DelieveryPricingRuleDto responseDto = new DelieveryPricingRuleDto();
+			responseDto.setBasefees(saverule.getBasefees());
+			responseDto.setFreeDelievery(saverule.getFreeDelievery());
+			responseDto.setMaxdelieveryradius(saverule.getMaxdelieveryradius());
+			responseDto.setPerKmRate(saverule.getPerKmRate());
+			responseDto.setActive(saverule.isActive());
+			result.add(responseDto);
+		}
+		return result;
 	}
 
 	@Override
 	public void deletebyDeliveryPricingRule(int id) {
-		// TODO Auto-generated method stub
-		
+		delieveryPricingRuleRepository.deleteById(id);
 	}
 
 	@Override
 	public DelieveryPricingRuleDto updateDeliveryPricingRule(DelieveryPricingRuleDto delieveryPricingRuleDto, int id) {
-		// TODO Auto-generated method stub
-		return null;
+		return addDeliveryPricingRule(delieveryPricingRuleDto);
 	}
 
 }

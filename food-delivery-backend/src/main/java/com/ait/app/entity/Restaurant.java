@@ -44,6 +44,7 @@ public class Restaurant {
 	private List<FoodItem> foodItems;
 	
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "restaurant")
 	private List<Feedback> feedbackList; 
 	
@@ -52,6 +53,6 @@ public class Restaurant {
 	@OneToMany(mappedBy = "restaurant",cascade = CascadeType.ALL)
 	private List<Cart> carts;
 	
-	private boolean open;
+	private boolean open = true;
 
 }

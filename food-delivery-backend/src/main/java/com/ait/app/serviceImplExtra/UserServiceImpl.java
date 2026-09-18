@@ -56,10 +56,10 @@ public class UserServiceImpl implements UserService {
 			throw new UserException("Please enter your email", HttpStatus.BAD_REQUEST);
 		}
 
-		if (!user.getEmail().endsWith("@gmail.com")) {
+		if (!user.getEmail().contains("@")) {
 
 			log.warn("Invalid email format");
-			throw new UserException("Please use a @gmail.com", HttpStatus.BAD_REQUEST);
+			throw new UserException("Please enter a valid email address", HttpStatus.BAD_REQUEST);
 		}
 
 		if (userRepository.existsByEmail(user.getEmail())) {
@@ -113,6 +113,7 @@ public class UserServiceImpl implements UserService {
 		User user = o.get();
 		UserResponse dto = new UserResponse();
 
+		dto.setId(user.getId());
 		dto.setName(user.getName());
 		dto.setEmail(user.getEmail());
 		dto.setMobile(user.getMobile());
@@ -149,17 +150,12 @@ public class UserServiceImpl implements UserService {
 		
 		List<User> l = userRepository.findAll();
 
-		if (l.isEmpty()) {
-
-			log.warn("No users found");
-			throw new UserException("Users not found", HttpStatus.NOT_FOUND);
-		}
-
-		List<UserResponse> list = new ArrayList();
+		List<UserResponse> list = new ArrayList<>();
 
 		for (User user : l) {
 
 			UserResponse dto = new UserResponse();
+			dto.setId(user.getId());
 			dto.setName(user.getName());
 			dto.setMobile(user.getMobile());
 			dto.setEmail(user.getEmail());
@@ -237,6 +233,7 @@ public class UserServiceImpl implements UserService {
 
 		UserResponse response = new UserResponse();
 
+		response.setId(updatedUser.getId());
 		response.setName(updatedUser.getName());
 		response.setEmail(updatedUser.getEmail());
 		response.setMobile(updatedUser.getMobile());

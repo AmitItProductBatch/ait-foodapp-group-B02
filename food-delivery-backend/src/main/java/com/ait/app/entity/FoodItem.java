@@ -2,6 +2,7 @@ package com.ait.app.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,6 +45,7 @@ public class FoodItem {
 	@JoinColumn(name = "restaurant_id", nullable = false)
 	private Restaurant restaurant;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "foodItem",cascade = CascadeType.ALL)	
 	private List<Feedback> feedbackList;
 	

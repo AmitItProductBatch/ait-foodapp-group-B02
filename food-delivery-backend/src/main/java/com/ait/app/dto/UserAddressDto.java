@@ -25,8 +25,9 @@ public class UserAddressDto {
 	private String state;
 	private Long pincode;
 	private String addressType;
-	private double latitude;
-	private double longitude;
-	private int userId;
+
+	private Double latitude;
+
+	private Double longitude;
 
 }

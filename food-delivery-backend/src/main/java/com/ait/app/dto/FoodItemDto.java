@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class FoodItemDto {
 
+	private int foodid;
 	private String foodname;
 	private String foodtype;
 	private String description;
