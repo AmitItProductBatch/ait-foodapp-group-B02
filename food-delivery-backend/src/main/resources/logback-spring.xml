@@ -7,9 +7,17 @@
     <springProperty scope="context" name="lokiUrl" source="loki.url" defaultValue="http://194.242.57.93:3100/loki/api/v1/push"/>
 
     <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
-        <http>
+        <http class="com.github.loki4j.logback.JavaHttpSender">
             <url>${lokiUrl}</url>
+            <!-- Increase HTTP timeout from default 5s to 15s -->
+            <requestTimeoutMs>15000</requestTimeoutMs>
+            <connectionTimeoutMs>10000</connectionTimeoutMs>
         </http>
+
+        <!-- Buffer & Pipeline tuning to handle slower Loki responses -->
+        <batchTimeoutMs>10000</batchTimeoutMs>
+        <batchMaxItems>1000</batchMaxItems>
+
         <format>
             <label>
                 <pattern>app=${appName},host=${HOSTNAME},level=%level</pattern>
