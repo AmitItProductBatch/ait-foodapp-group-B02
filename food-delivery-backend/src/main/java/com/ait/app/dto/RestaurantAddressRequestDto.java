@@ -14,4 +14,8 @@ public class RestaurantAddressRequestDto {
 
 	private Long restaurantId;
 
+	public double Longitude;
+
+	public double Latitude;
+
 }
