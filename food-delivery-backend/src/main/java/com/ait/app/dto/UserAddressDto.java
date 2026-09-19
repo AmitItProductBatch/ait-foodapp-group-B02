@@ -23,12 +23,15 @@ public class UserAddressDto {
 	private String city;
 
 	private String state;
+	
 	private Long pincode;
-	private String addressType;
 
-	private Double latitude;
+    private String addressType;
 
-	private Double longitude;
+    private double latitude;
+    private double longitude;
+	 
+ 
 
 	private int userId;
 }
