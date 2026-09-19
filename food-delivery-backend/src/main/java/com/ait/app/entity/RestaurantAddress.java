@@ -41,9 +41,9 @@ public class RestaurantAddress {
 	@Column(nullable = false)
 	private String pincode;
 	
-	private double latitude;
+	private Double latitude;
 	
-	private double longitude;
+	private Double longitude;
 	
 	@OneToOne
 	@JsonIgnore
