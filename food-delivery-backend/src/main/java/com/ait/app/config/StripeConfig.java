@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class StripeConfig {
 
-    @Value("${stripe.api-key:sk_test_mock_secret_key}")
+    @Value("${stripe.api-key:sk_test_123}")
     private String apiKey;
 
     @Value("${stripe.api-base:http://194.242.57.93:12111}")
