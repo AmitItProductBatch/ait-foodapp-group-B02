@@ -23,15 +23,11 @@ public class UserAddress {
     private String landmark;
     private String area; 
     private String city;
-
     private String state;
-
     private Long pincode;
-
+    private String addressType; 
     private double latitude;
     private double longitude;
-    
-    private String addressType; 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

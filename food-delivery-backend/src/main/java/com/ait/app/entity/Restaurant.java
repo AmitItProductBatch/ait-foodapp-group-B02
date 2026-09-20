@@ -35,7 +35,7 @@ public class Restaurant {
 
 	private String description;
 
-	@OneToOne(mappedBy = "restaurant")
+	@OneToOne(mappedBy = "restaurant", cascade = CascadeType.ALL)
 	@JsonIgnore
 	private RestaurantAddress restaurantAddress;
 
@@ -44,6 +44,7 @@ public class Restaurant {
 	private List<FoodItem> foodItems;
 	
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "restaurant")
 	private List<Feedback> feedbackList; 
 	
@@ -51,5 +52,14 @@ public class Restaurant {
 	@JsonIgnore
 	@OneToMany(mappedBy = "restaurant",cascade = CascadeType.ALL)
 	private List<Cart> carts;
+	
+
+	@OneToMany(mappedBy = "restaurant")
+	@JsonIgnore
+	private List<Order> orders;
+	
+	@Column(nullable = false)
+	private boolean open = true;
+
 
 }

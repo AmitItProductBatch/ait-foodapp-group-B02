@@ -7,8 +7,9 @@ import lombok.Data;
 @Data
 public class UserResponse {
 
+	private int id;
 	private String name;
-	private long mobile;
+	private String mobile;
 	private String email;
 	private String role;
 	private List<UserAddressDto1>	addresses;

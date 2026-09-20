@@ -1,0 +1,1362 @@
+{
+  "info": {
+    "_postman_id": "b711168d-d240-4b80-8915-food-delivery-api",
+    "name": "Food Delivery API - Complete Collection (Group B02)",
+    "description": "Comprehensive Postman collection for all endpoints of the Food Delivery Platform (AIT Group B02), including Users, Addresses, Restaurants, Menu, Cart, Pricing, Orders, Payments, Feedback, and Actuator Monitoring.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://194.242.57.93:8082",
+      "type": "string",
+      "description": "Base URL of the Food Delivery Backend Service"
+    },
+    {
+      "key": "userId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "restaurantId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "foodItemId",
+      "value": "5",
+      "type": "string"
+    },
+    {
+      "key": "cartId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "userAddressId",
+      "value": "2",
+      "type": "string"
+    },
+    {
+      "key": "restaurantAddressId",
+      "value": "2",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "paymentId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "feedbackId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "00. Actuator & Observability",
+      "item": [
+        {
+          "name": "Service Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Checks if the Spring Boot application, PostgreSQL connection, and mail services are UP."
+          }
+        },
+        {
+          "name": "Prometheus Metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/prometheus",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "prometheus"
+              ]
+            },
+            "description": "Scrapes Prometheus metrics for Grafana dashboard monitoring."
+          }
+        },
+        {
+          "name": "Service Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/info",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "info"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "01. Users Management",
+      "item": [
+        {
+          "name": "Create User (Register)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rahul Verma\",\n  \"email\": \"rahul.verma88@gmail.com\",\n  \"mobile\": \"9876543210\",\n  \"role\": \"CUSTOMER\",\n  \"password\": \"SecurePass@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            },
+            "description": "Registers a new user. Note: Email MUST end with @gmail.com, mobile MUST be 10 digits."
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            },
+            "description": "Fetches all users with their address lists."
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update User By ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rahul Verma Updated\",\n  \"email\": \"rahul.updated88@gmail.com\",\n  \"mobile\": \"9876543211\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete User By ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{userId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02. User Addresses",
+      "item": [
+        {
+          "name": "Add User Address",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"houseNo\": \"Flat 302\",\n  \"buildingName\": \"Skyline Towers\",\n  \"street\": \"Palm Street\",\n  \"landmark\": \"Near City Mall\",\n  \"area\": \"Kothrud\",\n  \"city\": \"Pune\",\n  \"state\": \"Maharashtra\",\n  \"pincode\": 411038,\n  \"addressType\": \"HOME\",\n  \"latitude\": 18.5074,\n  \"longitude\": 73.8077\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/user-address",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user-address"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Address By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/user-address/{{userAddressId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user-address",
+                "{{userAddressId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Addresses for User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/user-address/user/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user-address",
+                "user",
+                "{{userId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Address by Type for User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/user-address/user/HOME/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user-address",
+                "user",
+                "HOME",
+                "{{userId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update User Address",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"houseNo\": \"Flat 302-B\",\n  \"buildingName\": \"Skyline Towers Phase 2\",\n  \"street\": \"Palm Street\",\n  \"landmark\": \"Opposite City Mall\",\n  \"area\": \"Kothrud\",\n  \"city\": \"Pune\",\n  \"state\": \"Maharashtra\",\n  \"pincode\": 411038,\n  \"addressType\": \"HOME\",\n  \"latitude\": 18.5074,\n  \"longitude\": 73.8077\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/user-address/{{userAddressId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user-address",
+                "{{userAddressId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete User Address",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/user-address/{{userAddressId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user-address",
+                "{{userAddressId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03. Restaurants",
+      "item": [
+        {
+          "name": "Add Restaurant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Paradise Biryani Hub\",\n  \"phone\": \"9823456781\",\n  \"email\": \"paradisebiryani@gmail.com\",\n  \"description\": \"Famous Hyderabadi & Awadhi Delicacies\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "restaurants"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Restaurants",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "restaurants"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Restaurant By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "restaurants",
+                "{{restaurantId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Restaurants by City",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants/search?city=Pune",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "restaurants",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Pune"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Restaurant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Paradise Biryani Hub & Grill\",\n  \"phone\": \"9823456781\",\n  \"email\": \"paradisebiryani@gmail.com\",\n  \"description\": \"Famous Hyderabadi Biryani, Kebabs & Tandoor\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "restaurants",
+                "{{restaurantId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Restaurant",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "restaurants",
+                "{{restaurantId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04. Restaurant Addresses",
+      "item": [
+        {
+          "name": "Add Restaurant Address",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": {{restaurantId}},\n  \"shopNo\": 101,\n  \"street\": \"JM Road\",\n  \"area\": \"Deccan Gymkhana\",\n  \"city\": \"Pune\",\n  \"state\": \"Maharashtra\",\n  \"pincode\": \"411004\",\n  \"latitude\": 18.5196,\n  \"longitude\": 73.8441\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant-addresses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "restaurant-addresses"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Restaurant Addresses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant-addresses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "restaurant-addresses"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Restaurant Address By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant-addresses/{{restaurantAddressId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "restaurant-addresses",
+                "{{restaurantAddressId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Restaurant Address",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": {{restaurantId}},\n  \"shopNo\": 102,\n  \"street\": \"JM Road Extended\",\n  \"area\": \"Deccan Gymkhana\",\n  \"city\": \"Pune\",\n  \"state\": \"Maharashtra\",\n  \"pincode\": \"411004\",\n  \"latitude\": 18.5196,\n  \"longitude\": 73.8441\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant-addresses/{{restaurantAddressId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "restaurant-addresses",
+                "{{restaurantAddressId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Restaurant Address",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant-addresses/{{restaurantAddressId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "restaurant-addresses",
+                "{{restaurantAddressId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05. Food Items (Menu)",
+      "item": [
+        {
+          "name": "Add Food Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"foodname\": \"Butter Chicken Deluxe\",\n  \"foodtype\": \"NON_VEG\",\n  \"description\": \"Tender boneless chicken in rich creamy tomato butter gravy\",\n  \"cuisine\": \"North Indian\",\n  \"available\": true,\n  \"price\": 340.0,\n  \"restaurantId\": {{restaurantId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/food/add",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "food",
+                "add"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Food Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/food/all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "food",
+                "all"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Food Item By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/food/{{foodItemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "food",
+                "{{foodItemId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Food Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"foodname\": \"Butter Chicken Deluxe (Boneless)\",\n  \"foodtype\": \"NON_VEG\",\n  \"description\": \"Tender chicken cooked with fresh cream and rich butter gravy\",\n  \"cuisine\": \"North Indian\",\n  \"available\": true,\n  \"price\": 360.0,\n  \"restaurantId\": {{restaurantId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/food/update/{{foodItemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "food",
+                "update",
+                "{{foodItemId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Food Item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/food/delete/{{foodItemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "food",
+                "delete",
+                "{{foodItemId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06. Price Lookup",
+      "item": [
+        {
+          "name": "Get Price by Food Item ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/{{foodItemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "{{foodItemId}}"
+              ]
+            },
+            "description": "Looks up the price and name of a food item by its ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "07. Delivery Pricing Rules",
+      "item": [
+        {
+          "name": "Add Delivery Pricing Rule",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/delieverypricing/add?basefees=30&perKmRate=10&maxdelieveryradius=10&freeDelievery=500&active=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "delieverypricing",
+                "add"
+              ],
+              "query": [
+                {
+                  "key": "basefees",
+                  "value": "30"
+                },
+                {
+                  "key": "perKmRate",
+                  "value": "10"
+                },
+                {
+                  "key": "maxdelieveryradius",
+                  "value": "10"
+                },
+                {
+                  "key": "freeDelievery",
+                  "value": "500"
+                },
+                {
+                  "key": "active",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Configures active delivery pricing rule. Note: Currently expects query parameters due to missing @RequestBody in controller."
+          }
+        }
+      ]
+    },
+    {
+      "name": "08. Cart Management",
+      "item": [
+        {
+          "name": "Create / Initialize Cart for User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"restaurentId\": {{restaurantId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Cart By User ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "{{userId}}"
+              ]
+            },
+            "description": "Retrieves the active cart for a specific user. (Requires at least 1 item in cart currently)."
+          }
+        },
+        {
+          "name": "Get All Carts (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Cart by Cart ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/{{cartId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "{{cartId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "09. Cart Items",
+      "item": [
+        {
+          "name": "Add Item to Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartId\": {{cartId}},\n  \"foodItemId\": {{foodItemId}},\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "items"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Cart Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "items"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Cart Item By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/items/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "items",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Cart Item By ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/items/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "items",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete All Cart Items",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cart",
+                "items"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Delivery Fee Calculation",
+      "item": [
+        {
+          "name": "Calculate Delivery Fee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantAddressId\": {{restaurantAddressId}},\n  \"userAddressId\": {{userAddressId}},\n  \"cartId\": {{cartId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/prices/delivery-fee",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "prices",
+                "delivery-fee"
+              ]
+            },
+            "description": "Calculates driving distance and delivery fee between restaurant address and user address."
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Orders Management",
+      "item": [
+        {
+          "name": "Create Order (Checkout)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"deliveryAddressId\": {{userAddressId}},\n  \"paymentMethod\": \"UPI\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            },
+            "description": "Converts current cart items into a placed order."
+          }
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}?status=CONFIRMED",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "CONFIRMED"
+                }
+              ]
+            },
+            "description": "Statuses: PLACED, CONFIRMED, PREPARING, OUT_FOR_DELIVERY, DELIVERED, CANCELLED"
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. Payments",
+      "item": [
+        {
+          "name": "Create Payment Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transactionId\": \"TXN_FOOD_776655\",\n  \"orderId\": {{orderId}},\n  \"userId\": {{userId}},\n  \"amount\": 680.0,\n  \"paymentMethod\": \"UPI\",\n  \"paymentStatus\": \"SUCCESS\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Payment By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/{{paymentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "{{paymentId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Payment Status",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/{{paymentId}}?status=REFUNDED",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "{{paymentId}}"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "REFUNDED"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Payment Record",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/{{paymentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "{{paymentId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "13. Feedback & Reviews",
+      "item": [
+        {
+          "name": "Submit Feedback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"restaurantId\": {{restaurantId}},\n  \"foodItemId\": {{foodItemId}},\n  \"rating\": 5,\n  \"comment\": \"Exceptional taste and prompt delivery!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/feedback",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "feedback"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Feedbacks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/feedback",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "feedback"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Feedback By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/feedback/{{feedbackId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "feedback",
+                "{{feedbackId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Feedbacks for Restaurant",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/feedback/restaurant/{{restaurantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "feedback",
+                "restaurant",
+                "{{restaurantId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Feedback",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"restaurantId\": {{restaurantId}},\n  \"foodItemId\": {{foodItemId}},\n  \"rating\": 4,\n  \"comment\": \"Good food quality, portions were generous.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/feedback/{{feedbackId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "feedback",
+                "{{feedbackId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Feedback",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/feedback/{{feedbackId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "feedback",
+                "{{feedbackId}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
