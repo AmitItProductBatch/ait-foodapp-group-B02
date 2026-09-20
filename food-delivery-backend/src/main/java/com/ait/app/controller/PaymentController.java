@@ -36,6 +36,14 @@ public class PaymentController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PostMapping
+    public ResponseEntity<Payment> createPayment(
+            @RequestBody PaymentRequestDto dto) {
+
+        Payment payment = paymentService.createPayment(dto);
+        return new ResponseEntity<>(payment, HttpStatus.CREATED);
+    }
+
     @GetMapping
     public ResponseEntity<List<Payment>> getAllPayments() {
         List<Payment> payments = paymentService.getAllPayments();

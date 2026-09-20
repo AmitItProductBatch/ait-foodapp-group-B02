@@ -43,24 +43,26 @@ export default function App() {
   const [foodItems, setFoodItems] = useState([])
   const [cart, setCart] = useState({ cartId: 0, items: [], totalAmount: 0 })
   const [orders, setOrders] = useState([])
+  const [payments, setPayments] = useState([])
   const [feedbacks, setFeedbacks] = useState([])
   const [pricingRules, setPricingRules] = useState([])
   
   // Delivery Fee & Distance Calculation
   const [selectedAddressId, setSelectedAddressId] = useState(null)
   const [deliveryInfo, setDeliveryInfo] = useState({ distance: 0, deliveryFee: 30, loading: false })
-  const [paymentMethod, setPaymentMethod] = useState('UPI')
+  const [paymentMethod, setPaymentMethod] = useState('CARD')
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('')
   const [typeFilter, setTypeFilter] = useState('ALL') // 'ALL' | 'VEG' | 'NON_VEG'
   const [selectedCuisine, setSelectedCuisine] = useState('ALL')
 
-  // Modals
+  // Modals & Stripe Mock State
   const [showUserModal, setShowUserModal] = useState(false)
   const [showAddressModal, setShowAddressModal] = useState(false)
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [stripePaymentData, setStripePaymentData] = useState(null)
   const [selectedOrderForAction, setSelectedOrderForAction] = useState(null)
 
   // Forms State
@@ -184,6 +186,10 @@ export default function App() {
       // 7. Pricing Rules
       const rulesData = await api.getAllDeliveryPricingRules().catch(() => [])
       setPricingRules(Array.isArray(rulesData) ? rulesData : [])
+
+      // 8. Payments Ledger
+      const payData = await api.getAllPayments().catch(() => [])
+      setPayments(Array.isArray(payData) ? payData : [])
 
     } catch (err) {
       console.error('Error loading initial data:', err)
@@ -315,32 +321,76 @@ export default function App() {
       const orderPayload = {
         userId: currentUser.id,
         deliveryAddressId: selectedAddressId,
-        paymentMethod: paymentMethod
+        paymentMethod: paymentMethod === 'CARD' ? 'STRIPE' : paymentMethod
       }
 
       const createdOrder = await api.createOrder(orderPayload)
-      showToast(`🎉 Order #${createdOrder.orderId || ''} Placed Successfully!`, 'success')
 
-      // Record Payment
-      const payPayload = {
-        transactionId: `TXN_${Date.now().toString().slice(-6)}`,
-        orderId: createdOrder.orderId,
-        userId: currentUser.id,
-        amount: createdOrder.totalAmount,
-        paymentMethod: paymentMethod,
-        paymentStatus: 'SUCCESS'
+      if (paymentMethod === 'CARD') {
+        // Initiate Stripe Mock Gateway Payment
+        try {
+          const initRes = await api.initiatePayment({
+            orderId: createdOrder.orderId,
+            userId: currentUser.id,
+            amount: createdOrder.totalAmount,
+            paymentMethod: 'STRIPE'
+          })
+
+          setStripePaymentData({
+            ...initRes,
+            order: createdOrder
+          })
+          setShowPaymentModal(true)
+          showToast(`Order #${createdOrder.orderId} created! Complete mock payment below.`, 'info')
+        } catch (stripeErr) {
+          showToast(`Stripe Gateway notice: ${stripeErr.message}`, 'error')
+        }
+      } else {
+        // Direct record for UPI / COD
+        const payPayload = {
+          transactionId: `TXN_${Date.now().toString().slice(-6)}`,
+          orderId: createdOrder.orderId,
+          userId: currentUser.id,
+          amount: createdOrder.totalAmount,
+          paymentMethod: paymentMethod,
+          paymentStatus: paymentMethod === 'COD' ? 'PENDING' : 'SUCCESS'
+        }
+        await api.createPayment(payPayload).catch(() => {})
+        showToast(`🎉 Order #${createdOrder.orderId || ''} Placed Successfully!`, 'success')
       }
-      await api.createPayment(payPayload).catch(() => {})
 
       setCart({ cartId: 0, items: [], totalAmount: 0 })
       setCartOpen(false)
-      setActiveTab('orders')
       
-      // Refresh Orders
+      if (paymentMethod !== 'CARD') {
+        setActiveTab('orders')
+      }
+      
+      // Refresh Orders & Payments
       const orderData = await api.getAllOrders().catch(() => [])
       setOrders(Array.isArray(orderData) ? orderData : [])
+      const payData = await api.getAllPayments().catch(() => [])
+      setPayments(Array.isArray(payData) ? payData : [])
     } catch (err) {
       showToast(`Order failed: ${err.message}`, 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Authorize & Complete Stripe Mock Payment
+  const handleAuthorizeStripePayment = async () => {
+    if (!stripePaymentData || !stripePaymentData.paymentId) return
+    setLoading(true)
+    try {
+      await api.updatePaymentStatus(stripePaymentData.paymentId, 'PAID')
+      showToast('💳 Stripe Mock Payment Authorized & Confirmed!', 'success')
+      setShowPaymentModal(false)
+      setStripePaymentData(null)
+      setActiveTab('orders')
+      loadInitialData()
+    } catch (err) {
+      showToast(`Payment authorization error: ${err.message}`, 'error')
     } finally {
       setLoading(false)
     }
@@ -1153,6 +1203,114 @@ export default function App() {
                 </button>
               </form>
             </div>
+
+            {/* 4. Live Payments & Gateway Ledger */}
+            <div className="admin-card" style={{ gridColumn: '1 / -1' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <div>
+                  <div className="section-label">
+                    <CreditCard size={16} color="var(--primary)" /> Stripe Gateway & Payments Ledger
+                  </div>
+                  <h2 style={{ fontSize: '1.25rem' }}>Live Transactions (Stripe Mock & COD)</h2>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    Monitors live payment intents created with Stripe Mock Server at <code>http://194.242.57.93:12111</code>.
+                  </p>
+                </div>
+                <button
+                  className="btn-secondary"
+                  onClick={async () => {
+                    const payData = await api.getAllPayments().catch(() => [])
+                    setPayments(Array.isArray(payData) ? payData : [])
+                    showToast('Payments ledger refreshed!', 'info')
+                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                >
+                  <RefreshCw size={14} /> Refresh Ledger
+                </button>
+              </div>
+
+              {payments.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-dim)' }}>
+                  No payment records found yet. Place an order to initiate a Stripe mock payment intent!
+                </div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table className="payments-table">
+                    <thead>
+                      <tr>
+                        <th>Payment ID</th>
+                        <th>Transaction / Intent ID</th>
+                        <th>Order #</th>
+                        <th>User ID</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Status</th>
+                        <th>Timestamp</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {payments.map((p) => (
+                        <tr key={p.id || p.transactionId}>
+                          <td><strong>#{p.id}</strong></td>
+                          <td>
+                            <code style={{ color: '#38bdf8', background: 'rgba(255,255,255,0.05)', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>
+                              {p.transactionId || 'N/A'}
+                            </code>
+                          </td>
+                          <td>Order #{p.orderId}</td>
+                          <td>User #{p.userId}</td>
+                          <td style={{ fontWeight: '700' }}>₹{Number(p.amount || 0).toFixed(2)}</td>
+                          <td>
+                            <span style={{ fontSize: '0.8rem', color: p.paymentMethod === 'STRIPE' ? '#818cf8' : '#cbd5e1' }}>
+                              {p.paymentMethod === 'STRIPE' ? '💳 Stripe Mock' : p.paymentMethod}
+                            </span>
+                          </td>
+                          <td>
+                            <span className={
+                              ['PAID', 'SUCCESS', 'SUCCEEDED'].includes((p.paymentStatus || '').toUpperCase())
+                                ? 'badge-paid'
+                                : (p.paymentStatus || '').toUpperCase() === 'FAILED'
+                                ? 'badge-failed'
+                                : 'badge-pending'
+                            }>
+                              {p.paymentStatus || 'PENDING'}
+                            </span>
+                          </td>
+                          <td style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
+                            {p.paymentDate ? new Date(p.paymentDate).toLocaleString() : 'Just now'}
+                          </td>
+                          <td>
+                            <select
+                              className="address-select"
+                              style={{ width: 'auto', marginBottom: 0, padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                              value={p.paymentStatus || 'PENDING'}
+                              onChange={async (e) => {
+                                try {
+                                  await api.updatePaymentStatus(p.id, e.target.value)
+                                  showToast(`Payment #${p.id} marked as ${e.target.value}`, 'success')
+                                  const refreshed = await api.getAllPayments()
+                                  setPayments(refreshed)
+                                } catch (err) {
+                                  showToast(err.message, 'error')
+                                }
+                              }}
+                            >
+                              <option value="PAID">PAID</option>
+                              <option value="SUCCESS">SUCCESS</option>
+                              <option value="PENDING">PENDING</option>
+                              <option value="REQUIRES_PAYMENT_METHOD">REQ_METHOD</option>
+                              <option value="REFUNDED">REFUNDED</option>
+                              <option value="FAILED">FAILED</option>
+                            </select>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </main>
@@ -1565,7 +1723,113 @@ export default function App() {
         </div>
       )}
 
-      {/* Footer */}
+      {/* ========================================================================
+          MODAL 4: STRIPE MOCK PAYMENT GATEWAY CHECKOUT
+          ======================================================================== */}
+      {showPaymentModal && stripePaymentData && (
+        <div className="modal-backdrop" onClick={() => setShowPaymentModal(false)}>
+          <div className="modal-box" style={{ maxWidth: '580px' }} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <div style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', padding: '0.4rem', borderRadius: '8px', color: '#fff', display: 'flex' }}>
+                  <CreditCard size={20} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '1.3rem', fontWeight: '800' }}>Stripe Mock Checkout</h2>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Secure Sandbox Gateway</span>
+                </div>
+              </div>
+              <button className="btn-close" onClick={() => setShowPaymentModal(false)}>
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Gateway Banner */}
+            <div className="stripe-banner">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <ShieldCheck size={20} color="#818cf8" />
+                <div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '700' }}>Stripe-Mock Server Connected</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Target: http://194.242.57.93:12111</div>
+                </div>
+              </div>
+              <span className="stripe-badge">● TEST MODE</span>
+            </div>
+
+            {/* Mock Credit Card Visual */}
+            <div className="mock-card-visual">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="mock-card-chip"></div>
+                <div style={{ fontWeight: '800', fontStyle: 'italic', letterSpacing: '1px', fontSize: '1.1rem' }}>
+                  STRIPE
+                </div>
+              </div>
+
+              <div className="mock-card-number">
+                4242 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242
+              </div>
+
+              <div className="mock-card-footer">
+                <div>
+                  <div style={{ fontSize: '0.65rem', opacity: 0.7 }}>CARDHOLDER</div>
+                  <div className="name">{currentUser?.name || 'Rahul Sharma'}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.65rem', opacity: 0.7 }}>EXPIRES</div>
+                  <div>12/28</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.65rem', opacity: 0.7 }}>CVC</div>
+                  <div>888</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Transaction & Intent Details */}
+            <div className="stripe-meta-box">
+              <div className="stripe-meta-row">
+                <span>Payment Intent ID:</span>
+                <code>{stripePaymentData.transactionId || 'pi_mock_...'}</code>
+              </div>
+              <div className="stripe-meta-row">
+                <span>Client Secret:</span>
+                <code>{stripePaymentData.clientSecret || 'pi_..._secret_...'}</code>
+              </div>
+              <div className="stripe-meta-row">
+                <span>Order Reference:</span>
+                <span style={{ fontWeight: '700', color: 'var(--text-main)' }}>Order #{stripePaymentData.orderId}</span>
+              </div>
+              <div className="stripe-meta-row" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '0.4rem', marginTop: '0.2rem' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: '700' }}>Total Charge:</span>
+                <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--primary)' }}>
+                  ₹{Number(stripePaymentData.amount || 0).toFixed(2)}
+                </span>
+              </div>
+            </div>
+
+            {/* Pay Button */}
+            <button
+              className="btn-stripe-pay"
+              disabled={loading}
+              onClick={handleAuthorizeStripePayment}
+            >
+              {loading ? (
+                <>
+                  <RefreshCw size={18} className="spin" /> Authorizing via Stripe Mock...
+                </>
+              ) : (
+                <>
+                  <ShieldCheck size={18} /> Authorize & Pay ₹{Number(stripePaymentData.amount || 0).toFixed(2)}
+                </>
+              )}
+            </button>
+
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.4rem', marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-dim)' }}>
+              <ShieldCheck size={12} /> TLS 256-bit Mock Encryption • Immediate Settlement
+            </div>
+          </div>
+        </div>
+      )}
       <footer className="footer">
         FoodDelivery Enterprise Platform • Built with Spring Boot 3 & React • CI/CD Verified
       </footer>

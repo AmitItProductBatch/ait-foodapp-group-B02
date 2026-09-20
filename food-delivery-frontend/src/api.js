@@ -138,11 +138,24 @@ export const updateOrderStatus = (id, status) => request(`/api/orders/${id}?stat
 export const cancelOrder = (id) => request(`/api/orders/${id}`, { method: 'DELETE' })
 
 // ------------------------------------------------------------------------------
-// Payments
+// Payments & Stripe Gateway
 // ------------------------------------------------------------------------------
-export const createPayment = (paymentData) => request('/api/payments', { method: 'POST', body: paymentData })
+export const initiatePayment = (paymentData) => 
+  request('/api/payments/initiate', { method: 'POST', body: paymentData })
+
+export const createPayment = (paymentData) => 
+  request('/api/payments', { method: 'POST', body: paymentData })
+
 export const getAllPayments = () => request('/api/payments')
-export const updatePaymentStatus = (id, status) => request(`/api/payments/${id}?status=${encodeURIComponent(status)}`, { method: 'PUT' })
+
+export const getPaymentById = (id) => request(`/api/payments/${id}`)
+
+export const updatePaymentStatus = (id, status) => 
+  request(`/api/payments/${id}/status?status=${encodeURIComponent(status)}`, { method: 'PUT' })
+
+export const deletePayment = (id) => 
+  request(`/api/payments/${id}`, { method: 'DELETE' })
+
 
 // ------------------------------------------------------------------------------
 // Feedback & Reviews

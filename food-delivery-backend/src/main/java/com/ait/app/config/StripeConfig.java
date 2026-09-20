@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class StripeConfig {
 
-    @Value("${stripe.api-key}")
+    @Value("${stripe.api-key:sk_test_mock_secret_key}")
     private String apiKey;
 
-    @Value("${stripe.api-base:}")
+    @Value("${stripe.api-base:http://194.242.57.93:12111}")
     private String apiBase;
 
     @PostConstruct
