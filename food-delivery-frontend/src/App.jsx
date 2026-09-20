@@ -1724,108 +1724,214 @@ export default function App() {
       )}
 
       {/* ========================================================================
-          MODAL 4: STRIPE MOCK PAYMENT GATEWAY CHECKOUT
+          STRIPE HOSTED CHECKOUT REDIRECTION VIEW (checkout.stripe.com)
           ======================================================================== */}
       {showPaymentModal && stripePaymentData && (
-        <div className="modal-backdrop" onClick={() => setShowPaymentModal(false)}>
-          <div className="modal-box" style={{ maxWidth: '580px' }} onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <div style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', padding: '0.4rem', borderRadius: '8px', color: '#fff', display: 'flex' }}>
-                  <CreditCard size={20} />
-                </div>
-                <div>
-                  <h2 style={{ fontSize: '1.3rem', fontWeight: '800' }}>Stripe Mock Checkout</h2>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Secure Sandbox Gateway</span>
-                </div>
-              </div>
-              <button className="btn-close" onClick={() => setShowPaymentModal(false)}>
-                <X size={18} />
+        <div className="stripe-hosted-page">
+          {/* Simulated Browser Address Bar */}
+          <div className="stripe-browser-bar">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <button
+                onClick={() => {
+                  setShowPaymentModal(false)
+                  setStripePaymentData(null)
+                  showToast('Payment cancelled. You can retry from My Orders.', 'info')
+                }}
+                style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem' }}
+              >
+                ← Return to FoodDelivery
               </button>
             </div>
-
-            {/* Gateway Banner */}
-            <div className="stripe-banner">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <ShieldCheck size={20} color="#818cf8" />
-                <div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '700' }}>Stripe-Mock Server Connected</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Target: http://194.242.57.93:12111</div>
-                </div>
-              </div>
-              <span className="stripe-badge">● TEST MODE</span>
+            
+            <div className="stripe-url-pill">
+              <ShieldCheck size={14} color="#10b981" />
+              <span>https://checkout.stripe.com/c/pay/{stripePaymentData.transactionId || 'cs_test_mock'}</span>
             </div>
 
-            {/* Mock Credit Card Visual */}
-            <div className="mock-card-visual">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div className="mock-card-chip"></div>
-                <div style={{ fontWeight: '800', fontStyle: 'italic', letterSpacing: '1px', fontSize: '1.1rem' }}>
-                  STRIPE
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span className="stripe-badge" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', borderColor: 'rgba(16, 185, 129, 0.4)' }}>
+                ● STRIPE TESTMODE
+              </span>
+            </div>
+          </div>
+
+          <div className="stripe-hosted-container">
+            {/* Left Summary Column (Merchant & Order Breakdown) */}
+            <div className="stripe-summary-col">
+              <div>
+                <div className="stripe-merchant-header">
+                  <div className="stripe-merchant-logo">🍔</div>
+                  <div>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: '700' }}>FoodDelivery Platform</h3>
+                    <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Order #{stripePaymentData.orderId} • Group B02</span>
+                  </div>
+                </div>
+
+                <div style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '0.25rem' }}>Amount Due</div>
+                <div className="stripe-amount-large">₹{Number(stripePaymentData.amount || 0).toFixed(2)}</div>
+
+                <div style={{ marginTop: '2rem' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#94a3b8', marginBottom: '0.75rem' }}>
+                    Order Summary
+                  </div>
+                  
+                  {stripePaymentData.order?.items && stripePaymentData.order.items.length > 0 ? (
+                    stripePaymentData.order.items.map((item, idx) => (
+                      <div key={idx} className="stripe-order-item-row">
+                        <span>{item.quantity}x {item.itemName || 'Delicacy'}</span>
+                        <span>₹{Number(item.totalPrice || 0).toFixed(2)}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="stripe-order-item-row">
+                      <span>Meal Selection & Delivery</span>
+                      <span>₹{Number(stripePaymentData.amount || 0).toFixed(2)}</span>
+                    </div>
+                  )}
+
+                  <div className="stripe-order-item-row" style={{ color: '#64748b' }}>
+                    <span>Estimated Delivery</span>
+                    <span>25 - 35 mins</span>
+                  </div>
+                  <div className="stripe-order-item-row" style={{ color: '#64748b' }}>
+                    <span>Recipient</span>
+                    <span>{currentUser?.name} (#{currentUser?.id})</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="mock-card-number">
-                4242 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242
-              </div>
-
-              <div className="mock-card-footer">
-                <div>
-                  <div style={{ fontSize: '0.65rem', opacity: 0.7 }}>CARDHOLDER</div>
-                  <div className="name">{currentUser?.name || 'Rahul Sharma'}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.65rem', opacity: 0.7 }}>EXPIRES</div>
-                  <div>12/28</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.65rem', opacity: 0.7 }}>CVC</div>
-                  <div>888</div>
+              {/* Technical Stripe Mock Metadata */}
+              <div>
+                <div className="stripe-meta-box" style={{ background: 'rgba(0,0,0,0.5)', borderColor: 'rgba(255,255,255,0.1)' }}>
+                  <div className="stripe-meta-row">
+                    <span style={{ color: '#94a3b8' }}>Gateway Target:</span>
+                    <code style={{ color: '#38bdf8' }}>http://194.242.57.93:12111</code>
+                  </div>
+                  <div className="stripe-meta-row">
+                    <span style={{ color: '#94a3b8' }}>Payment Intent:</span>
+                    <code>{stripePaymentData.transactionId}</code>
+                  </div>
+                  <div className="stripe-meta-row">
+                    <span style={{ color: '#94a3b8' }}>Client Secret:</span>
+                    <code>{stripePaymentData.clientSecret}</code>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Transaction & Intent Details */}
-            <div className="stripe-meta-box">
-              <div className="stripe-meta-row">
-                <span>Payment Intent ID:</span>
-                <code>{stripePaymentData.transactionId || 'pi_mock_...'}</code>
-              </div>
-              <div className="stripe-meta-row">
-                <span>Client Secret:</span>
-                <code>{stripePaymentData.clientSecret || 'pi_..._secret_...'}</code>
-              </div>
-              <div className="stripe-meta-row">
-                <span>Order Reference:</span>
-                <span style={{ fontWeight: '700', color: 'var(--text-main)' }}>Order #{stripePaymentData.orderId}</span>
-              </div>
-              <div className="stripe-meta-row" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '0.4rem', marginTop: '0.2rem' }}>
-                <span style={{ fontSize: '0.9rem', fontWeight: '700' }}>Total Charge:</span>
-                <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--primary)' }}>
-                  ₹{Number(stripePaymentData.amount || 0).toFixed(2)}
-                </span>
-              </div>
-            </div>
+            {/* Right Payment Column (Stripe Checkout Form) */}
+            <div className="stripe-payment-col">
+              <div>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: '700', marginBottom: '1.5rem', color: '#0f172a' }}>
+                  Pay with Card (Stripe Sandbox)
+                </h2>
 
-            {/* Pay Button */}
-            <button
-              className="btn-stripe-pay"
-              disabled={loading}
-              onClick={handleAuthorizeStripePayment}
-            >
-              {loading ? (
-                <>
-                  <RefreshCw size={18} className="spin" /> Authorizing via Stripe Mock...
-                </>
-              ) : (
-                <>
-                  <ShieldCheck size={18} /> Authorize & Pay ₹{Number(stripePaymentData.amount || 0).toFixed(2)}
-                </>
-              )}
-            </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#475569', marginBottom: '0.35rem' }}>
+                      Email address
+                    </label>
+                    <input
+                      type="email"
+                      className="stripe-input-box"
+                      defaultValue={currentUser?.email || 'customer@gmail.com'}
+                      readOnly
+                    />
+                  </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.4rem', marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-              <ShieldCheck size={12} /> TLS 256-bit Mock Encryption • Immediate Settlement
+                  {/* Card Information */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#475569', marginBottom: '0.35rem' }}>
+                      Card information
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type="text"
+                        className="stripe-input-box"
+                        style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0, letterSpacing: '2px', fontFamily: 'monospace' }}
+                        defaultValue="4242 •••• •••• 4242"
+                        readOnly
+                      />
+                      <div style={{ display: 'flex' }}>
+                        <input
+                          type="text"
+                          className="stripe-input-box"
+                          style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0, borderRight: 'none', width: '50%' }}
+                          defaultValue="12 / 28"
+                          readOnly
+                        />
+                        <input
+                          type="text"
+                          className="stripe-input-box"
+                          style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0, width: '50%' }}
+                          defaultValue="888"
+                          readOnly
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#475569', marginBottom: '0.35rem' }}>
+                      Cardholder name
+                    </label>
+                    <input
+                      type="text"
+                      className="stripe-input-box"
+                      defaultValue={currentUser?.name || 'Rahul Sharma'}
+                      readOnly
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#475569', marginBottom: '0.35rem' }}>
+                      Country or region
+                    </label>
+                    <select className="stripe-input-box" defaultValue="India">
+                      <option value="India">India</option>
+                      <option value="United States">United States</option>
+                      <option value="United Kingdom">United Kingdom</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button
+                  className="stripe-checkout-btn"
+                  disabled={loading}
+                  onClick={handleAuthorizeStripePayment}
+                >
+                  {loading ? (
+                    <>
+                      <RefreshCw size={20} className="spin" /> Processing Mock Charge...
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck size={20} /> Pay ₹{Number(stripePaymentData.amount || 0).toFixed(2)}
+                    </>
+                  )}
+                </button>
+
+                <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                  <button
+                    onClick={() => {
+                      setShowPaymentModal(false)
+                      setStripePaymentData(null)
+                    }}
+                    style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: '0.85rem', cursor: 'pointer', textDecoration: 'underline' }}
+                  >
+                    Cancel and return to merchant
+                  </button>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="stripe-footer-links">
+                <span>Powered by <strong>stripe</strong></span>
+                <span>•</span>
+                <span style={{ cursor: 'pointer' }}>Terms</span>
+                <span>•</span>
+                <span style={{ cursor: 'pointer' }}>Privacy</span>
+              </div>
             </div>
           </div>
         </div>
