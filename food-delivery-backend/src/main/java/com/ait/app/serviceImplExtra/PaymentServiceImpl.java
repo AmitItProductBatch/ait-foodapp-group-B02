@@ -41,7 +41,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             PaymentIntent intent = stripeGatewayService.createPaymentIntent(
                 amountInSmallestUnit, 
-                "usd"
+                "inr"
             );
 
             Payment payment = new Payment();

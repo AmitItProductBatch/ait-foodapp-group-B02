@@ -1211,22 +1211,41 @@ export default function App() {
                   <div className="section-label">
                     <CreditCard size={16} color="var(--primary)" /> Stripe Gateway & Payments Ledger
                   </div>
-                  <h2 style={{ fontSize: '1.25rem' }}>Live Transactions (Stripe Mock & COD)</h2>
+                  <h2 style={{ fontSize: '1.25rem' }}>Live Transactions (Stripe Testmode & COD)</h2>
                   <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                    Monitors live payment intents created with Stripe Mock Server at <code>http://194.242.57.93:12111</code>.
+                    Synchronized with official Stripe Cloud. View live charges on the{' '}
+                    <a
+                      href="https://dashboard.stripe.com/test/payments"
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: '#38bdf8', textDecoration: 'underline', fontWeight: '600' }}
+                    >
+                      Stripe Test Dashboard ↗
+                    </a>.
                   </p>
                 </div>
-                <button
-                  className="btn-secondary"
-                  onClick={async () => {
-                    const payData = await api.getAllPayments().catch(() => [])
-                    setPayments(Array.isArray(payData) ? payData : [])
-                    showToast('Payments ledger refreshed!', 'info')
-                  }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-                >
-                  <RefreshCw size={14} /> Refresh Ledger
-                </button>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <a
+                    href="https://dashboard.stripe.com/test/payments"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-secondary"
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 0.8rem', fontSize: '0.85rem', textDecoration: 'none', background: 'rgba(99, 102, 241, 0.2)', borderColor: 'rgba(99, 102, 241, 0.4)', color: '#a5b4fc' }}
+                  >
+                    Stripe Dashboard ↗
+                  </a>
+                  <button
+                    className="btn-secondary"
+                    onClick={async () => {
+                      const payData = await api.getAllPayments().catch(() => [])
+                      setPayments(Array.isArray(payData) ? payData : [])
+                      showToast('Payments ledger refreshed!', 'info')
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                  >
+                    <RefreshCw size={14} /> Refresh Ledger
+                  </button>
+                </div>
               </div>
 
               {payments.length === 0 ? (
@@ -1805,7 +1824,7 @@ export default function App() {
                 <div className="stripe-meta-box" style={{ background: 'rgba(0,0,0,0.5)', borderColor: 'rgba(255,255,255,0.1)' }}>
                   <div className="stripe-meta-row">
                     <span style={{ color: '#94a3b8' }}>Gateway Target:</span>
-                    <code style={{ color: '#38bdf8' }}>http://194.242.57.93:12111</code>
+                    <code style={{ color: '#38bdf8' }}>https://api.stripe.com</code>
                   </div>
                   <div className="stripe-meta-row">
                     <span style={{ color: '#94a3b8' }}>Payment Intent:</span>
