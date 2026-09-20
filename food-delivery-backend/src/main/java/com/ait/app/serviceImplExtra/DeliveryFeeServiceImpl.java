@@ -41,9 +41,6 @@ public class DeliveryFeeServiceImpl
             int userAddressId,
             int cartId) {
 
-        // -----------------------------------------
-        // FEE RULES
-        // -----------------------------------------
 
         double baseFee = 30;
         double baseDistance = 2;
@@ -51,9 +48,6 @@ public class DeliveryFeeServiceImpl
         double freeDeliveryThreshold = 500;
 
 
-        // -----------------------------------------
-        // FIND RESTAURANT ADDRESS
-        // -----------------------------------------
 
         Optional<RestaurantAddress> restaurantAddressOptional =
                 restaurantAddressRepository
@@ -71,9 +65,6 @@ public class DeliveryFeeServiceImpl
                 restaurantAddressOptional.get();
 
 
-        // -----------------------------------------
-        // FIND USER ADDRESS
-        // -----------------------------------------
 
         Optional<UserAddress> userAddressOptional =
                 userAddressRepository
@@ -91,10 +82,6 @@ public class DeliveryFeeServiceImpl
                 userAddressOptional.get();
 
 
-        // -----------------------------------------
-        // FIND CART
-        // -----------------------------------------
-
         Optional<Cart> cartOptional =
                 cartRepository.findById(cartId);
 
@@ -109,9 +96,6 @@ public class DeliveryFeeServiceImpl
         Cart cart = cartOptional.get();
 
 
-        // -----------------------------------------
-        // CHECK COORDINATES
-        // -----------------------------------------
 
         if (restaurantAddress.getLatitude() == 0
                 || restaurantAddress.getLongitude() == 0) {
@@ -132,9 +116,6 @@ public class DeliveryFeeServiceImpl
         }
 
 
-        // -----------------------------------------
-        // GET COORDINATES
-        // -----------------------------------------
 
         double restaurantLatitude =
                 restaurantAddress.getLatitude();
@@ -149,10 +130,6 @@ public class DeliveryFeeServiceImpl
                 userAddress.getLongitude();
 
 
-        // -----------------------------------------
-        // CALCULATE ROAD DISTANCE
-        // -----------------------------------------
-
         double distance =
                 distanceService.getDistance(
                         restaurantLongitude,
@@ -161,10 +138,6 @@ public class DeliveryFeeServiceImpl
                         userLatitude
                 );
 
-
-        // -----------------------------------------
-        // CALCULATE DELIVERY FEE
-        // -----------------------------------------
 
         double deliveryFee;
 
@@ -177,14 +150,14 @@ public class DeliveryFeeServiceImpl
 
         }
 
-        // First 2 km
+    
         else if (distance <= baseDistance) {
 
             deliveryFee = baseFee;
 
         }
 
-        // More than 2 km
+      
         else {
 
             double extraDistance =
@@ -196,10 +169,7 @@ public class DeliveryFeeServiceImpl
         }
 
 
-        // -----------------------------------------
-        // RESPONSE
-        // -----------------------------------------
-
+      
         Map<String, Object> response =
                 new HashMap<>();
 
