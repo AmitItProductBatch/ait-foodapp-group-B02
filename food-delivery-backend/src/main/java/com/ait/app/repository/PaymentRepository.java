@@ -7,9 +7,15 @@ import org.springframework.data.repository.query.Param;
 
 import com.ait.app.entity.Payment;
 
+import java.util.Optional;
+
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 	
 	Payment findPaymentById(Long id);
+
+	Optional<Payment> findByTransactionId(String transactionId);
+
+	Optional<Payment> findByOrderId(Long orderId);
 	
 	 @Modifying
 	    @Query(value = """
