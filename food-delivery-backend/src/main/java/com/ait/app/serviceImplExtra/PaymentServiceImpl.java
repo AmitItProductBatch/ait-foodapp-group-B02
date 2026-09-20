@@ -3,150 +3,144 @@ package com.ait.app.serviceImplExtra;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.ait.app.dto.PaymentInitiationResponseDto;
 import com.ait.app.dto.PaymentRequestDto;
 import com.ait.app.entity.Payment;
 import com.ait.app.exception.PaymentException;
 import com.ait.app.repository.PaymentRepository;
 import com.ait.app.service.PaymentService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 
-import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
-	@Autowired
-	PaymentRepository paymentRepository;
+    private final PaymentRepository paymentRepository;
+    private final StripeGatewayService stripeGatewayService;
 
-	@Override
-	public Payment addPayment(PaymentRequestDto dto) {
+    @Override
+    @Transactional
+    public PaymentInitiationResponseDto initiatePayment(PaymentRequestDto dto) {
+        log.info("Initiating payment for orderId: {}", dto.getOrderId());
 
-		log.info("Creating payment for orderId: {}", dto.getOrderId());
+        try {
+            // Stripe expects amount in smallest currency unit (cents)
+            long amountInSmallestUnit = Math.round(dto.getAmount() * 100);
 
-		Payment payment = new Payment();
+            PaymentIntent intent = stripeGatewayService.createPaymentIntent(
+                amountInSmallestUnit, 
+                "usd"
+            );
 
-		payment.setTransactionId(dto.getTransactionId());
-		payment.setOrderId(dto.getOrderId());
-		payment.setUserId(dto.getUserId());
-		payment.setAmount(dto.getAmount());
-		payment.setPaymentMethod(dto.getPaymentMethod());
-		payment.setPaymentStatus(dto.getPaymentStatus());
+            Payment payment = new Payment();
+            payment.setTransactionId(intent.getId());
+            payment.setOrderId(dto.getOrderId());
+            payment.setUserId(dto.getUserId());
+            payment.setAmount(dto.getAmount());
+            payment.setPaymentMethod("STRIPE");
+            payment.setPaymentStatus(intent.getStatus().toUpperCase());
+            payment.setPaymentDate(LocalDateTime.now());
 
-		payment.setPaymentDate(LocalDateTime.now());
+            Payment savedPayment = paymentRepository.save(payment);
+            log.info("Payment record created with id: {} and transactionId: {}", 
+                     savedPayment.getId(), intent.getId());
 
-		Payment savedPayment = paymentRepository.save(payment);
+            return PaymentInitiationResponseDto.builder()
+                    .paymentId(savedPayment.getId())
+                    .transactionId(savedPayment.getTransactionId())
+                    .clientSecret(intent.getClientSecret())
+                    .orderId(savedPayment.getOrderId())
+                    .amount(savedPayment.getAmount())
+                    .paymentStatus(savedPayment.getPaymentStatus())
+                    .paymentDate(savedPayment.getPaymentDate())
+                    .build();
 
-		log.info("Payment created successfully with id: {}",
-				savedPayment.getId());
+        } catch (StripeException e) {
+            log.error("Stripe gateway failure for orderId {}: {}", dto.getOrderId(), e.getMessage());
+            throw new PaymentException("Payment gateway error: " + e.getUserMessage(), HttpStatus.BAD_GATEWAY);
+        }
+    }
 
-		return savedPayment;
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public Payment getPayment(Long id) {
+        log.debug("Fetching payment with id: {}", id);
 
-	@Override
-	public Payment getPayment(Long id) {
+        Payment payment = paymentRepository.findById(id).orElse(null);
 
-		log.debug("Fetching payment with id: {}", id);
+        if (payment == null) {
+            log.warn("Payment not found with id: {}", id);
+            throw new PaymentException("Payment not found", HttpStatus.NOT_FOUND);
+        }
 
-		Payment payment = paymentRepository.findById(id).orElse(null);
+        log.info("Payment found with id: {}", id);
+        return payment;
+    }
 
-		if (payment == null) {
+    @Override
+    @Transactional(readOnly = true)
+    public List<Payment> getAllPayments() {
+        log.debug("Fetching all payments");
+        List<Payment> payments = paymentRepository.findAll();
 
-			log.warn("Payment not found with id: {}", id);
+        if (payments.isEmpty()) {
+            log.warn("No payments found");
+        } else {
+            log.info("{} payment(s) found", payments.size());
+        }
 
-			throw new PaymentException(
-					"Payment not found",
-					HttpStatus.NOT_FOUND);
-		}
+        return payments;
+    }
 
-		log.info("Payment found with id: {}", id);
+    @Override
+    @Transactional
+    public void deletePayment(Long id) {
+        log.info("Deleting payment with id: {}", id);
 
-		return payment;
-	}
+        Payment payment = paymentRepository.findById(id).orElse(null);
 
-	@Override
-	public List<Payment> getAllPayments() {
+        if (payment == null) {
+            log.warn("Cannot delete. Payment not found with id: {}", id);
+            throw new PaymentException("Payment not found", HttpStatus.NOT_FOUND);
+        }
 
-		log.debug("Fetching all payments");
+        paymentRepository.deleteById(id);
+        log.info("Payment deleted successfully with id: {}", id);
+    }
 
-		long startTime = System.currentTimeMillis();
+    @Override
+    @Transactional
+    public Payment updatePaymentStatus(Long id, String status) {
+        log.info("Updating payment status for id: {} to {}", id, status);
 
-		List<Payment> payments = paymentRepository.findAll();
+        Payment payment = paymentRepository.findById(id).orElse(null);
 
-		long executionTime =
-				System.currentTimeMillis() - startTime;
+        if (payment == null) {
+            log.warn("Cannot update payment status. Payment not found with id: {}", id);
+            throw new PaymentException("Payment not found", HttpStatus.NOT_FOUND);
+        }
 
-		log.info("Payment search completed in {} ms",
-				executionTime);
+        log.debug("Current payment status for id {}: {}", id, payment.getPaymentStatus());
 
-		if (payments.isEmpty()) {
-			log.warn("No payments found");
-		} else {
-			log.info("{} payments found", payments.size());
-		}
+        String previousStatus = payment.getPaymentStatus();
+        payment.setPaymentStatus(status);
 
-		return payments;
-	}
+        Payment updatedPayment = paymentRepository.save(payment);
 
-	@Override
-	public void deletePayment(Long id) {
+        log.info("Payment status updated successfully for id: {} from {} to {}",
+                id, previousStatus, status);
 
-		log.info("Deleting payment with id: {}", id);
+        return updatedPayment;
+    }
 
-		Payment payment = paymentRepository.findById(id).orElse(null);
-
-		if (payment == null) {
-
-			log.warn("Cannot delete. Payment not found with id: {}",
-					id);
-
-			throw new PaymentException(
-					"Payment not found",
-					HttpStatus.NOT_FOUND);
-		}
-
-		paymentRepository.deleteById(id);
-
-		log.info("Payment deleted successfully with id: {}", id);
-	}
-
-	@Override
-	@Transactional
-	public Payment updatePaymentStatus(Long id, String status) {
-
-		log.info("Updating payment status for id: {} to {}",
-				id, status);
-
-		Payment payment = paymentRepository.findById(id).orElse(null);
-
-		if (payment == null) {
-
-			log.warn("Cannot update payment status. Payment not found with id: {}",
-					id);
-
-			throw new PaymentException(
-					"Payment not found",
-					HttpStatus.NOT_FOUND);
-		}
-
-		log.debug("Current payment status for id {}: {}",
-				id, payment.getPaymentStatus());
-
-		paymentRepository.updatePaymentStatus(id, status);
-
-		Payment updatedPayment =
-				paymentRepository.findById(id).get();
-
-		log.info("Payment status updated successfully for id: {} from {} to {}",
-				id,
-				payment.getPaymentStatus(),
-				status);
-
-		return updatedPayment;
-	}
-
+	
 }
