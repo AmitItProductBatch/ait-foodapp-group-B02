@@ -2,12 +2,13 @@ package com.ait.app.service;
 
 import java.util.List;
 
+import com.ait.app.dto.UserDto;
 import com.ait.app.dto.UserResponse;
 import com.ait.app.entity.User;
 
 public interface UserService {
 
-	public void saveUser(User user);
+	public void saveUser(UserDto userDto);
 
 	public UserResponse getUser(int id);
 
