@@ -9,6 +9,7 @@ import com.ait.app.exception.CartItemServiceException;
 import com.ait.app.exception.CartServiceException;
 import com.ait.app.exception.DelieveryPricingRuleException;
 import com.ait.app.exception.DeliveryFeeException;
+import com.ait.app.exception.DeliveryPartnerException;
 import com.ait.app.exception.FeedbackException;
 import com.ait.app.exception.FooditemException;
 import com.ait.app.exception.OrderException;
@@ -85,4 +86,15 @@ public class GlobalExceptionHandling {
     public ResponseEntity<String> handleException(Exception ex) {
         return new ResponseEntity<>("Internal server error: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    
+    @ExceptionHandler(DeliveryPartnerException.class)
+    public ResponseEntity<?> handleDeliveryPartnerException(
+            DeliveryPartnerException e) {
+
+        return new ResponseEntity<>(
+                e.getMessage(),
+                e.getHttpStatus()
+        );
+    }
+    
 }
