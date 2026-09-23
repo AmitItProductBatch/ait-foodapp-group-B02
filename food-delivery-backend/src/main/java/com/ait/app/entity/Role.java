@@ -13,11 +13,11 @@ import lombok.Data;
 @Data
 public class Role {
 
-	    @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private int id;
-	    private String rName;
-	    
-	    @OneToMany(mappedBy = "role")
-	    private List<User> users;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
+	private String roleName;
+
+	@OneToMany(mappedBy = "role")
+	private List<User> users;
 }
