@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class RoleResponse {
 	
-	private String rName;
+	private String roleName;
 }

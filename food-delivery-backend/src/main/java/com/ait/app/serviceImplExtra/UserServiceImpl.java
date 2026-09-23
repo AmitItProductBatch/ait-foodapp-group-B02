@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
 		dto.setName(user.getName());
 		dto.setEmail(user.getEmail());
 		dto.setMobile(user.getMobile());
-		dto.setRole(user.getRole().getRName());
+		dto.setRole(user.getRole().getRoleName());
 		dto.setAddresses(uAddServ.fetchAllUserAddressesByUserId(id));
 
 		log.info("User get successfully with id: {}", id);
@@ -172,7 +172,7 @@ public class UserServiceImpl implements UserService {
 			dto.setName(user.getName());
 			dto.setMobile(user.getMobile());
 			dto.setEmail(user.getEmail());
-			dto.setRole(user.getRole().getRName());
+			dto.setRole(user.getRole().getRoleName());
 			dto.setAddresses(uAddServ.fetchAllUserAddressesByUserId(user.getId()));
 			list.add(dto);
 

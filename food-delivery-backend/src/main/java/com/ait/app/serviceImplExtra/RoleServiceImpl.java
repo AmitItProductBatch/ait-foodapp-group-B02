@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.ait.app.dto.RoleResponse;
 import com.ait.app.entity.Role;
 import com.ait.app.exception.RoleException;
-import com.ait.app.exception.UserException;
+
 import com.ait.app.repository.RoleRepository;
 import com.ait.app.service.RoleService;
 
@@ -30,20 +30,32 @@ public class RoleServiceImpl implements RoleService {
 
 		log.info("Starting role registration");
 
-		if (r.getRName() == null || r.getRName().isEmpty()) {
+		if (r == null) {
+
+			log.warn("Role details are empty");
+
+			throw new RoleException("Role details cannot be empty", HttpStatus.BAD_REQUEST);
+		}
+
+		if (r.getRoleName() == null || r.getRoleName().isEmpty()) {
 
 			log.warn("Role name is missing");
+
 			throw new RoleException("Role name cannot be empty", HttpStatus.BAD_REQUEST);
 		}
 
-		if (roleRepository.existsByRole(r.getRName())) {
+		r.setRoleName(r.getRoleName().toUpperCase());
 
-			log.warn("Role already exists: {}", r.getRName());
+		if (roleRepository.existsByRoleName(r.getRoleName())) {
+
+			log.warn("Role already exists: {}", r.getRoleName());
+
 			throw new RoleException("Role is already registered", HttpStatus.CONFLICT);
 		}
 
 		roleRepository.save(r);
-		log.info("Role registered successfully: {}", r.getRName());
+
+		log.info("Role registered successfully: {}", r.getRoleName());
 	}
 
 	@Override
@@ -68,7 +80,7 @@ public class RoleServiceImpl implements RoleService {
 		Role role = o.get();
 		RoleResponse r = new RoleResponse();
 
-		r.setRName(role.getRName());
+		r.setRoleName(role.getRoleName());
 		log.info("Role fetched successfully with id: {}", id);
 		return r;
 	}
@@ -91,7 +103,7 @@ public class RoleServiceImpl implements RoleService {
 
 			RoleResponse response = new RoleResponse();
 
-			response.setRName(role.getRName());
+			response.setRoleName(role.getRoleName());
 
 			l.add(response);
 		}
