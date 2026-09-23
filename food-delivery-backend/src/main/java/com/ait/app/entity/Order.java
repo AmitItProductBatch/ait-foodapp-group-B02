@@ -59,6 +59,10 @@ public class Order {
 
     @OneToMany(mappedBy = "order",cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
+    
+    @ManyToOne
+    @JoinColumn(name = "delivery_partner_id")
+    private DeliveryPartner deliveryPartner;
 
 	
 }
