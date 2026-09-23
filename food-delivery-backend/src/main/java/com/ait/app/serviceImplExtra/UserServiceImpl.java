@@ -10,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.ait.app.dto.UserDto;
 import com.ait.app.dto.UserResponse;
+import com.ait.app.entity.Role;
 import com.ait.app.entity.User;
 import com.ait.app.exception.UserException;
+import com.ait.app.repository.RoleRepository;
 import com.ait.app.repository.UserRepository;
 import com.ait.app.service.UserService;
 
@@ -25,73 +28,83 @@ public class UserServiceImpl implements UserService {
 	UserRepository userRepository;
 
 	@Autowired
+	RoleRepository roleRepository;
+
+	@Autowired
 	UserAddressServiceImpl uAddServ;
 
 	@Override
-	public void saveUser(User user) {
-		
+	public void saveUser(UserDto userDto) {
+
 		log.info("Starting user registration");
 
-		if (user == null) {
+		if (userDto == null) {
 
 			log.warn("User details are empty");
 			throw new UserException("User details cannot be empty", HttpStatus.BAD_REQUEST);
 		}
 
-		if (user.getName() == null || user.getName().isEmpty()) {
-			
+		if (userDto.getName() == null || userDto.getName().isEmpty()) {
+
 			log.warn("User name is missing");
 			throw new UserException("Please enter your name", HttpStatus.BAD_REQUEST);
 		}
 
-		if (user.getRole() == null || user.getRole().isEmpty()) {
-
-			log.warn("User role is missing");
-			throw new UserException("Please enter your role", HttpStatus.BAD_REQUEST);
-		}
-
-		if (user.getEmail() == null || user.getEmail().isEmpty()) {
+		if (userDto.getEmail() == null || userDto.getEmail().isEmpty()) {
 
 			log.warn("User email is missing");
 			throw new UserException("Please enter your email", HttpStatus.BAD_REQUEST);
 		}
 
-		if (!user.getEmail().contains("@")) {
+		if (!userDto.getEmail().contains("@")) {
 
 			log.warn("Invalid email format");
 			throw new UserException("Please enter a valid email address", HttpStatus.BAD_REQUEST);
 		}
 
-		if (userRepository.existsByEmail(user.getEmail())) {
+		if (userRepository.existsByEmail(userDto.getEmail())) {
 
 			log.warn("Email already exists");
 			throw new UserException("Email is already registered", HttpStatus.CONFLICT);
 		}
 
-		if (user.getMobile() == null || user.getMobile().isEmpty()) {
+		if (userDto.getMobile() == null || userDto.getMobile().isEmpty()) {
 
 			log.warn("Mobile number is missing");
 			throw new UserException("Please enter your mobile number", HttpStatus.BAD_REQUEST);
 		}
 
-		if (!user.getMobile().matches("\\d{10}")) {
+		if (!userDto.getMobile().matches("\\d{10}")) {
 
 			log.warn("Invalid mobile number");
 			throw new UserException("Mobile number must be 10 digits", HttpStatus.BAD_REQUEST);
 		}
 
-		if (userRepository.existsByMobile(user.getMobile())) {
+		if (userRepository.existsByMobile(userDto.getMobile())) {
 
 			log.warn("Mobile number already exists");
 			throw new UserException("Mobile number is already registered", HttpStatus.CONFLICT);
 		}
 
-		if (user.getPassword() == null || user.getPassword().isEmpty()) {
+		if (userDto.getPassword() == null || userDto.getPassword().isEmpty()) {
 
 			log.warn("Password is missing");
 			throw new UserException("Please enter your password", HttpStatus.BAD_REQUEST);
 		}
 
+		Optional<Role> o = roleRepository.findById(userDto.getRoleId());
+		if (o.isEmpty()) {
+			
+			throw new UserException("Role not found", HttpStatus.NOT_FOUND);
+		}
+
+		User user = new User();
+		
+		user.setName(userDto.getName());
+		user.setMobile(userDto.getMobile());
+		user.setEmail(userDto.getEmail());
+		user.setPassword(userDto.getPassword());
+		user.setRole(o.get());
 		userRepository.save(user);
 
 		log.info("User registered successfully");
@@ -101,7 +114,7 @@ public class UserServiceImpl implements UserService {
 	public UserResponse getUser(int id) {
 
 		log.info("Getting user with id: {}", id);
-		
+
 		Optional<User> o = userRepository.findById(id);
 
 		if (o.isEmpty()) {
@@ -117,9 +130,9 @@ public class UserServiceImpl implements UserService {
 		dto.setName(user.getName());
 		dto.setEmail(user.getEmail());
 		dto.setMobile(user.getMobile());
-		dto.setRole(user.getRole());
+		dto.setRole(user.getRole().getRName());
 		dto.setAddresses(uAddServ.fetchAllUserAddressesByUserId(id));
-		
+
 		log.info("User get successfully with id: {}", id);
 		return dto;
 
@@ -129,11 +142,11 @@ public class UserServiceImpl implements UserService {
 	public void deleteUser(int id) {
 
 		log.info("Deleting user with id: {}", id);
-		
+
 		if (userRepository.existsById(id)) {
 
 			userRepository.deleteById(id);
-			
+
 			log.info("User deleted successfully with id: {}", id);
 
 		} else {
@@ -147,7 +160,7 @@ public class UserServiceImpl implements UserService {
 	public List<UserResponse> getAllUsers() {
 
 		log.info("Getting all users");
-		
+
 		List<User> l = userRepository.findAll();
 
 		List<UserResponse> list = new ArrayList<>();
@@ -159,22 +172,22 @@ public class UserServiceImpl implements UserService {
 			dto.setName(user.getName());
 			dto.setMobile(user.getMobile());
 			dto.setEmail(user.getEmail());
-			dto.setRole(user.getRole());
+			dto.setRole(user.getRole().getRName());
 			dto.setAddresses(uAddServ.fetchAllUserAddressesByUserId(user.getId()));
 			list.add(dto);
 
 		}
-		
+
 		log.info("Successfully fetched {} users", list.size());
 		return list;
-		
+
 	}
 
 	@Override
 	public UserResponse updateUser(int id, User user) {
 
 		log.info("Updating user with id: {}", id);
-		
+
 		Optional<User> o = userRepository.findById(id);
 
 		if (o.isEmpty()) {
@@ -194,7 +207,7 @@ public class UserServiceImpl implements UserService {
 		if (user.getEmail() != null && !user.getEmail().isEmpty()) {
 
 			log.debug("Updating email for user id: {}", id);
-			
+
 			if (!user.getEmail().endsWith("@gmail.com")) {
 
 				log.warn("Invalid email format for user id: {}", id);
@@ -213,7 +226,7 @@ public class UserServiceImpl implements UserService {
 		if (user.getMobile() != null && !user.getMobile().isEmpty()) {
 
 			log.debug("Updating mobile number for user id: {}", id);
-			
+
 			if (!user.getMobile().matches("\\d{10}")) {
 
 				log.warn("Invalid mobile number for user id: {}", id);
@@ -237,11 +250,10 @@ public class UserServiceImpl implements UserService {
 		response.setName(updatedUser.getName());
 		response.setEmail(updatedUser.getEmail());
 		response.setMobile(updatedUser.getMobile());
-		response.setRole(updatedUser.getRole());
 		response.setAddresses(uAddServ.fetchAllUserAddressesByUserId(id));
 
 		log.info("User updated successfully with id: {}", id);
-		
+
 		return response;
 	}
 
@@ -249,7 +261,7 @@ public class UserServiceImpl implements UserService {
 	public void deleteAllUsers() {
 
 		log.info("Deleting all users");
-		
+
 		List<User> l = userRepository.findAll();
 
 		if (l.isEmpty()) {
@@ -259,8 +271,8 @@ public class UserServiceImpl implements UserService {
 		}
 
 		userRepository.deleteAll();
-		
+
 		log.info("All users deleted successfully");
-	
+
 	}
 }
