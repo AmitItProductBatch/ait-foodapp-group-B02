@@ -15,5 +15,7 @@ public class DeliveryPartnerRequestDto {
 
     private String vehicleType;
 
+    private boolean active;
+
     private boolean available;
 }

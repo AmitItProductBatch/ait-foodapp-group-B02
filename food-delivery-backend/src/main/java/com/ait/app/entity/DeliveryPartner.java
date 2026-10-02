@@ -14,7 +14,7 @@ import lombok.Data;
 
 public class DeliveryPartner {
 
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -27,6 +27,8 @@ public class DeliveryPartner {
     private String vehicleNumber;
 
     private String vehicleType;
+
+    private boolean active;
 
     private boolean available;
 }
