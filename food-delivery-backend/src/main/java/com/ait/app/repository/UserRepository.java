@@ -18,4 +18,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	
 	@Query("SELECT COUNT(u) > 0 FROM User u WHERE u.mobile = :mobile AND u.id != :id")
 	boolean existsMobileForOtherUser(@Param("mobile") String mobile, @Param("id") int id);
+	
+	
+	User loadByName(String name);
+	
 }
