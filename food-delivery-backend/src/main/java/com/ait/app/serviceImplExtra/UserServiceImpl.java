@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ait.app.dto.UserDto;
@@ -32,6 +33,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	UserAddressServiceImpl uAddServ;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Override
 	public void saveUser(UserDto userDto) {
@@ -94,16 +98,16 @@ public class UserServiceImpl implements UserService {
 
 		Optional<Role> o = roleRepository.findById(userDto.getRoleId());
 		if (o.isEmpty()) {
-			
+
 			throw new UserException("Role not found", HttpStatus.NOT_FOUND);
 		}
 
 		User user = new User();
-		
+
 		user.setName(userDto.getName());
 		user.setMobile(userDto.getMobile());
 		user.setEmail(userDto.getEmail());
-		user.setPassword(userDto.getPassword());
+		user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 		user.setRole(o.get());
 		userRepository.save(user);
 
